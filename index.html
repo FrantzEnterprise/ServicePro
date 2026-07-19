@@ -417,12 +417,7 @@ function loadSettings(){
   applySettings();
 }
 
-function savePricing(){
-  settings.tripFee=parseFloat(document.getElementById('setTripFee').value)||0;
-  settings.radius=parseFloat(document.getElementById('setRadius').value)||0;
-  settings.mileageRate=parseFloat(document.getElementById('setMileRate').value)||0;
-  saveSettings();
-}
+function savePricing(){settings.tripFee=parseFloat(document.getElementById("setTripFee").value)||0;settings.radius=parseFloat(document.getElementById("setRadius").value)||0;settings.mileageRate=parseFloat(document.getElementById("setMileRate").value)||0;saveSettings();}
 function saveSettings(){
   localStorage.setItem('servicepro_settings',JSON.stringify(settings));
   applySettings();
@@ -465,27 +460,17 @@ function initSetupTabs(){
 
 function selectTrade(trade){
   currentTrade=trade;
-  var btns=document.querySelectorAll('.trade-btn');
   btns.forEach(function(b){b.classList.remove('active');});
   var el=document.querySelector('.trade-btn[data-trade="'+trade+'"]');
   if(el)el.classList.add('active');
-  var t=tradeFlows[trade];
-  var tabBar=document.getElementById('tabBar');
+  var t=tradeFlows[trade];var tabBar=document.getElementById('tabBar');
   tabBar.innerHTML='<div class="tab" onclick="openPinModal()" id="tabHome">\ud83c\udfe0</div>';
-  if(t&&t.subs){
-    t.subs.forEach(function(s,i){
-      var tab=document.createElement('div');
-      tab.className='tab'+(i===0?' active':'');
-      tab.textContent=s.label;
-      tab.onclick=function(k){return function(){switchTab(k);startFlow(k);};}(s.key);
-      tab.setAttribute('data-tab',s.key);
-      tab.id='tab-'+s.key;
-      tabBar.appendChild(tab);
-    });
-  }
-  currentSub=t&&t.subs?t.subs[0].key:'resi';
-  switchTab(currentSub);
-  startFlow(currentSub);
+  if(t&&t.subs){t.subs.forEach(function(s,i){
+    var tab=document.createElement('div');tab.className='tab'+(i===0?' active':'');
+    tab.textContent=s.label;tab.onclick=function(k){return function(){switchTab(k);startFlow(k);};}(s.key);
+    tab.setAttribute('data-tab',s.key);tab.id='tab-'+s.key;tabBar.appendChild(tab);
+  });}
+  currentSub=t&&t.subs?t.subs[0].key:'resi';switchTab(currentSub);startFlow(currentSub);
 }
 function setupNext(n){
   try{
@@ -622,9 +607,9 @@ function updateSettingsDrawer(){
   document.getElementById('setBgImg').value=s.bgImg||'';
   document.getElementById('setLogo').value=s.logo||'';
   document.getElementById('setFontSize').value=s.fontSize;
-  document.getElementById('setTripFee').value=s.tripFee||0;
-  document.getElementById('setRadius').value=s.radius||20;
-  document.getElementById('setMileRate').value=s.mileageRate||2;
+  if(document.getElementById('setTripFee'))document.getElementById('setTripFee').value=s.tripFee||0;
+  if(document.getElementById('setRadius'))document.getElementById('setRadius').value=s.radius||20;
+  if(document.getElementById('setMileRate'))document.getElementById('setMileRate').value=s.mileageRate||2;
   // Populate pricing fields
   if(document.getElementById('setTripFee')&&s.tripFee!==undefined){
     document.getElementById('setTripFee').value=s.tripFee;
@@ -748,14 +733,9 @@ var flows={
 };
 var trades = {
   locksmith:{icon:"\ud83d\udd10",subs:[{key:"resi",label:"Residential"},{key:"comm",label:"Commercial"},{key:"auto",label:"Automotive"},{key:"safe",label:"Safe"}]},
-  plumbing:{icon:"\ud83d\udd27",subs:[]},
-  hvac:{icon:"\ud83c\udf21",subs:[]},
-  towing:{icon:"\ud83d\udece",subs:[]},
-  electric:{icon:"\u26a1",subs:[]},
-  pest:{icon:"\ud83d\udc1c",subs:[]},
-  garage:{icon:"\ud83d\udeaa",subs:[]},
-  tree:{icon:"\ud83c\udf33",subs:[]},
-  pool:{icon:"\ud83c\udfca",subs:[]}
+  plumbing:{icon:"\ud83d\udd27",subs:[]}, hvac:{icon:"\ud83c\udf21",subs:[]}, towing:{icon:"\ud83d\udece",subs:[]},
+  electric:{icon:"\u26a1",subs:[]}, pest:{icon:"\ud83d\udc1c",subs:[]}, garage:{icon:"\ud83d\udeaa",subs:[]},
+  tree:{icon:"\ud83c\udf33",subs:[]}, pool:{icon:"\ud83c\udfca",subs:[]}
 };
 var currentTrade="locksmith";var currentSub="resi";var tradeFlows={};
 for(var tk in trades){tradeFlows[tk]={flows:{},subs:trades[tk].subs};}
@@ -795,9 +775,9 @@ function showResult(key){
   var f=flows[key],s=state[key],msg=f.build(s.answers),el=document.getElementById(key+'Result')||document.getElementById('mainResult'),subj="ServicePro: "+key.toUpperCase()+" Service Request";
   var phone=settings.phone||'';var country=settings.country||'1';var fullPhone='+'+country+phone.replace(/[^\d]/g,'');var email=settings.email||'';
   var tripFee=settings.tripFee||0;var total=tripFee;
-  var est='<div style="background:var(--surface);border-radius:8px;padding:14px;margin:12px 0;text-align:left"><h3 style="color:var(--accent);margin-bottom:8px">📋 Service Estimate</h3><div style="font-size:13px;line-height:1.8">'+msg.replace(/\n/g,'<br>')+'</div>';
+  var est='<div style="background:var(--surface);border-radius:8px;padding:14px;margin:12px 0;text-align:left"><h3 style="color:var(--accent);margin-bottom:8px">\ud83d\udccb Service Estimate</h3><div style="font-size:13px;line-height:1.8">'+msg.replace(/\n/g,'<br>')+'</div>';
   if(total>0){est+='<hr style="border:none;border-top:1px solid var(--border);margin:12px 0"><table style="width:100%;font-size:13px"><tr><td>Trip fee:</td><td style="text-align:right;font-weight:600">$'+tripFee.toFixed(2)+'</td></tr><tr style="border-top:1px solid var(--border)"><td style="padding-top:6px;font-weight:700">Est. Total:</td><td style="text-align:right;padding-top:6px;font-weight:700;color:var(--accent)">$'+total.toFixed(2)+'</td></tr></table><p style="color:var(--muted);font-size:11px;margin-top:8px">* Final price may vary. Technician confirms on call.</p>';}
-  est+='</div><div style="margin:16px 0"><button onclick="confirmSend(\''+key+'\',\''+fullPhone+'\',\''+email+'\')" style="width:100%;background:var(--accent);color:var(--bg);border:none;padding:14px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer">✅ Confirm & Send Request</button></div>';
+  est+='</div><div style="margin:16px 0"><button onclick="confirmSend(\''+key+'\',\''+fullPhone+'\',\''+email+'\')" style="width:100%;background:var(--accent);color:var(--bg);border:none;padding:14px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer">\u2705 Confirm & Send Request</button></div>';
   est+='<button class="reset-btn" onclick="startFlow(\''+key+'\')">Start Over</button>';
   el.innerHTML=est;el.classList.add('show');
   var oE=document.getElementById(key+'Opts')||document.getElementById('mainOpts');if(oE)oE.style.display='none';
@@ -809,11 +789,7 @@ function confirmSend(key,fullPhone,email){
   if(fullPhone){window.open('sms:'+fullPhone+'?body='+encodeURIComponent(msg),'_blank');}
   if(email){window.open('mailto:'+email+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(msg),'_blank');}
   var cbEl=document.getElementById(key+'Result')||document.getElementById('mainResult');
-  if(cbEl){cbEl.innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:48px;margin-bottom:10px">📞</div><h3 style="color:var(--green);margin-bottom:8px">Request Sent!</h3><p style="color:var(--muted);font-size:14px;line-height:1.5">Your service request has been sent. The technician will call you back as soon as possible to confirm the appointment and finalize pricing.</p><p style="color:var(--text);font-size:13px;margin-top:12px">Please keep your phone nearby.</p><button class="reset-btn" onclick="startFlow(\''+key+'\')" style="margin-top:16px">Submit Another Request</button></div>';}
-}
-function copyMsg(key){
-  var msg=flows[key].build(state[key].answers);
-  if(navigator.clipboard){navigator.clipboard.writeText(msg).then(function(){alert('Copied!');}).catch(function(){prompt('Copy:',msg);});}else{prompt('Copy:',msg);}
+  if(cbEl){cbEl.innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:48px;margin-bottom:10px">\ud83d\udcde</div><h3 style="color:var(--green);margin-bottom:8px">Request Sent!</h3><p style="color:var(--muted);font-size:14px;line-height:1.5">Your service request has been sent. The technician will call you back as soon as possible to confirm the appointment and finalize pricing.</p><p style="color:var(--text);font-size:13px;margin-top:12px">Please keep your phone nearby.</p><button class="reset-btn" onclick="startFlow(\''+key+'\')" style="margin-top:16px">Submit Another Request</button></div>';}
 }
 function copyMsg(key){
   var msg=flows[key].build(state[key].answers);
