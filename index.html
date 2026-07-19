@@ -649,9 +649,37 @@ function switchTab(id){
   history.replaceState(null,'','#'+id);
   if(!state[id]||!state[id].started)startFlow(id);
 }
-var currentTrade="locksmith";var currentSub="resi";var tradeFlows={};
-var flows={};
+var flows={
+  resi:{steps:[{q:"What's the situation?",opts:["Locked out","Need rekey","Lock repair","New install","Keys need duplication"],key:'situation'},{q:"What type of lock?",opts:["Deadbolt","Knob lock","Handle set","Smart lock","Not sure"],key:'lockType'},{q:"Is this urgent?",opts:["Yes - locked out now","Today","Can schedule"],key:'urgency'},{q:"Your name?",input:true,key:'name',placeholder:'John Smith'},{q:"Your phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'},{q:"Service address?",input:true,key:'address',placeholder:'123 Main St, City, State'}],build:function(a){var u=a.urgency==="Yes - locked out now"?"EMERGENCY":a.urgency==="Today"?"Today":"Scheduled";return "RESIDENTIAL LOCKSMITH REQUEST\n\nClient: "+a.name+"\nPhone: "+a.phone+"\nAddress: "+a.address+"\nSituation: "+a.situation+"\nLock type: "+a.lockType+"\nUrgency: "+u+"\n\nPlease contact me to confirm."}},
+  comm:{steps:[{q:"What type of business?",opts:["Office","Warehouse","Retail","Medical","School/Church","Other commercial"],key:'bizType'},{q:"What's needed?",opts:["Master key system","Rekey multiple doors","Panic hardware service","New door hardware install","Access control","Consultation"],key:'service'},{q:"Approx number of doors?",opts:["1-5","6-15","16-30","30+"],key:'doors'},{q:"Your name / company?",input:true,key:'name',placeholder:'Company name'},{q:"Best phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'},{q:"Business address?",input:true,key:'address',placeholder:'456 Business Ave'}],build:function(a){return "COMMERCIAL SERVICE REQUEST\n\nCompany: "+a.name+"\nPhone: "+a.phone+"\nAddress: "+a.address+"\nBusiness type: "+a.bizType+"\nService: "+a.service+"\nDoors: "+a.doors+"\n\nPlease contact me to schedule a walkthrough."}},
+  auto:{steps:[{q:"What's the situation?",opts:["Locked out of car","Lost all keys","Key broke in ignition","Need new fob","Trunk locked","Other"],key:'situation'},{q:"Vehicle year?",input:true,key:'year',placeholder:'2020'},{q:"Vehicle make & model?",input:true,key:'make',placeholder:'Toyota Camry'},{q:"Where's the vehicle?",opts:["At home","Parking lot","Store parking","Street side","Other location"],key:'location'},{q:"Your name?",input:true,key:'name',placeholder:'John Smith'},{q:"Your phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'}],build:function(a){return "AUTOMOTIVE SERVICE REQUEST\n\nClient: "+a.name+"\nPhone: "+a.phone+"\nVehicle: "+a.year+" "+a.make+"\nSituation: "+a.situation+"\nLocation: "+a.location+"\n\nPlease contact me."}},
+  safe:{steps:[{q:"What kind of safe?",opts:["Home / gun safe","Commercial safe","TL / high security","Antique / vintage","Floor / wall safe","Jewelry chest"],key:'type'},{q:"What's the issue?",opts:["Won't open / locked out","Dial spins freely","Digital keypad dead","Combo forgotten","Handle broken","Won't lock"],key:'issue'},{q:"Brand (if known)?",input:true,key:'brand',placeholder:'AMSEC, Gardall, Liberty, etc.'},{q:"Approx age?",opts:["New (0-5 yrs)","Modern (5-20)","Vintage (20-50)","Antique (50+)","Unknown"],key:'age'},{q:"Your name?",input:true,key:'name',placeholder:'John Smith'},{q:"Your phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'}],build:function(a){return "SAFE SERVICE REQUEST\n\nClient: "+a.name+"\nPhone: "+a.phone+"\nSafe type: "+a.type+"\nBrand: "+a.brand+"\nAge: "+a.age+"\nIssue: "+a.issue+"\n\nPlease contact me."}}
+};
+
+var trades = {
+  locksmith:{icon:"\ud83d\udd10",subs:[{key:"resi",label:"\ud83c\udfe0 Residential"},{key:"comm",label:"\ud83c\udfe2 Commercial"},{key:"auto",label:"\ud83d\ude97 Automotive"},{key:"safe",label:"\ud83d\udd12 Safe"}]},
+  plumbing:{icon:"\ud83d\udd27",subs:[]},
+  hvac:{icon:"\ud83c\udf21",subs:[]},
+  towing:{icon:"\ud83d\udece",subs:[]},
+  electric:{icon:"\u26a1",subs:[]},
+  pest:{icon:"\ud83d\udc1c",subs:[]},
+  garage:{icon:"\ud83d\udeaa",subs:[]},
+  tree:{icon:"\ud83c\udf33",subs:[]},
+  pool:{icon:"\ud83c\udfca",subs:[]}
+};
+var currentTrade="locksmith";
+var currentSub="resi";
+var tradeFlows={};
+for(var tk in trades){
+  tradeFlows[tk]={flows:{},subs:trades[tk].subs};
+}
+// Link locksmith flows
+var lt=trades.locksmith;
+lt.subs.forEach(function(s){
+  tradeFlows.locksmith.flows[s.key]=flows[s.key];
+});
 var state={};
+
 function startFlow(key){state[key]={answers:{},step:0,started:true};renderStep(key);}
 function renderStep(key){
   // Support both flat (legacy) and nested (tradeFlows) modes
