@@ -49,12 +49,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .flow-step-dots span.active{background:var(--accent)}
 .flow-step-dots span.done{background:var(--green)}
 
-/* Trade selector */
-.trade-selector{background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;padding:10px 16px}
-.trade-options{display:flex;gap:6px;flex-wrap:nowrap}
-.trade-btn{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-size:13px;white-space:nowrap;transition:.15s;flex-shrink:0}
-.trade-btn:hover{background:var(--surface2);color:var(--text)}
-.trade-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 /* Setup wizard */
 .setup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px}
 .setup-overlay.hidden{display:none}
@@ -421,12 +415,6 @@ function applySettings(){
   updateSettingsDrawer();
 }
 
-/* Trade selector */
-.trade-selector{background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;padding:10px 16px}
-.trade-options{display:flex;gap:6px;flex-wrap:nowrap}
-.trade-btn{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-size:13px;white-space:nowrap;transition:.15s;flex-shrink:0}
-.trade-btn:hover{background:var(--surface2);color:var(--text)}
-.trade-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 /* Setup wizard */
 var setupStep=0;
 function initSetupTabs(){
