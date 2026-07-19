@@ -302,8 +302,21 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 <label>Logo image URL (optional)</label><input type="text" id="setLogo" placeholder="https://your-site.com/logo.png">
 <label>Font size</label>
 <select id="setFontSize"><option value="14px">Small</option><option value="16px" selected>Default</option><option value="18px">Large</option></select>
+<div class="section-title">💰 Pricing</div>
+<label>Trip fee</label>
+<div style="display:flex;gap:6px;align-items:center">
+  <span style="color:var(--muted);font-size:13px">$</span>
+  <input type="number" id="setTripFee" min="0" step="5" value="0" style="width:100px">
+</div>
+<label>Service area radius (miles)</label>
+<input type="number" id="setRadius" min="0" step="1" value="20" style="width:100px">
+<label>Mileage rate ($/mi beyond radius)</label>
+<div style="display:flex;gap:6px;align-items:center">
+  <span style="color:var(--muted);font-size:13px">$</span>
+  <input type="number" id="setMileageRate" min="0" step="1" value="2" style="width:100px">
+</div>
 <div class="section-title">🔧 Services You Offer</div>
-<p style="color:var(--muted);font-size:11px;margin-bottom:6px">Check the services you provide. Clients only see what you offer.</p>
+<p style="color:var(--muted);font-size:11px;margin-bottom:6px">Check the services you provide. Clients only see what you offer. Set the price next to each service.</p>
 <div id="settingsServices"></div>
 <div class="section-title">🔒 Change PIN</div>
 <label>New PIN (4-6 digits — leave blank to keep current)</label>
@@ -333,7 +346,7 @@ function sha256(str){
 
 var defaultSettings = {
   bizName:'Frantz Locksmith Service',phone:'',email:'',country:'1',
-  tabs:{resi:true,comm:true,auto:true,safe:true},
+  tabs:{resi:true,comm:true,auto:true,safe:true},tripFee:0,radius:20,mileageRate:2,servicePrices:{},
   services:{
     resi:["Locked out","Need rekey","Lock repair","New install","Keys need duplication"],
     comm:["Office","Warehouse","Retail","Medical","School/Church","Other commercial"],
@@ -552,6 +565,10 @@ function updateSettingsDrawer(){
   document.getElementById('setBgImg').value=s.bgImg||'';
   document.getElementById('setLogo').value=s.logo||'';
   document.getElementById('setFontSize').value=s.fontSize;
+  document.getElementById('setTripFee').value=s.tripFee||0;
+  document.getElementById('setRadius').value=s.radius||20;
+  document.getElementById('setMileageRate').value=s.mileageRate||2;
+
   // Populate service checkboxes
   var ss=document.getElementById('settingsServices');
   if(ss&&s.services){
@@ -609,6 +626,9 @@ document.addEventListener('input',function(e){
   if(id==='setBgImg'){s.bgImg=e.target.value;saveSettings();}
   if(id==='setLogo'){s.logo=e.target.value;saveSettings();}
   if(id==='setFontSize'){s.fontSize=e.target.value;saveSettings();}
+  if(id==='setTripFee'){s.tripFee=parseFloat(e.target.value)||0;saveSettings();}
+  if(id==='setRadius'){s.radius=parseFloat(e.target.value)||20;saveSettings();}
+  if(id==='setMileageRate'){s.mileageRate=parseFloat(e.target.value)||2;saveSettings();}
 });
 function exportSettings(){
   var blob=new Blob([JSON.stringify(settings,null,2)],{type:'application/json'});
@@ -718,34 +738,75 @@ function showResult(key){
   if(!flows[key]&&tradeFlows[currentTrade]&&tradeFlows[currentTrade].flows[key]){
     flows[key]=tradeFlows[currentTrade].flows[key];
   }
-
   var f=flows[key],s=state[key],msg=f.build(s.answers),el=document.getElementById(key+'Result')||document.getElementById('mainResult'),subj="ServicePro: "+key.toUpperCase()+" Service Request";
   var phone=settings.phone||'';
   var country=settings.country||'1';
   var fullPhone='+'+country+phone.replace(/[^\d]/g,'');
   var email=settings.email||'';
-  el.innerHTML='<h3>Done! Send this to your locksmith</h3><div class="msg">'+msg.replace(/\n/g,'<br>')+'</div><div class="send-links">'+
-    (phone?'<a href="sms:'+fullPhone+'?body='+encodeURIComponent(msg)+'">Send via Text</a><button style="background:transparent;border:1px solid var(--border);border-radius:6px;padding:8px 16px;cursor:pointer;color:var(--muted);font-size:12px;" onclick="copyMsg(\''+key+'\')">Copy</button>':'')+
-    (email?'<a class="email" href="mailto:'+email+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(msg)+'">Send via Email</a>':'')+
-    '</div><button class="reset-btn" onclick="startFlow(\''+key+'\')">Start Over</button>'+
-    '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)"><p style="color:var(--muted);font-size:12px;margin-bottom:6px">Also need another service?</p><div id="addServiceBtns"></div></div>';
-  el.classList.add('show');var oE=document.getElementById(key+'Opts')||document.getElementById('mainOpts');if(oE)oE.style.display='none';var iE=document.getElementById(key+'Input')||document.getElementById('mainInput');if(iE)iE.style.display='none';var nE=document.getElementById(key+'Nav')||document.getElementById('mainNav');if(nE)nE.innerHTML='';
-  // Build "Add another service" buttons (only tabs that are enabled)
-  var asb=document.getElementById('addServiceBtns');
-  if(asb){
-    asb.innerHTML='';
-    var cats={resi:'Residential',comm:'Commercial',auto:'Automotive',safe:'Safe'};
-    for(var ck in cats){
-      if(ck===key||!settings.tabs[ck])continue;
-      (function(kk){
-        var btn=document.createElement('button');
-        btn.style.cssText='background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;color:var(--text);margin:3px';
-        btn.textContent=cats[ck];
-        btn.onclick=function(){startFlow(kk);};
-        asb.appendChild(btn);
-      })(ck);
-    }
+  
+  // Calculate estimate
+  var tripFee=settings.tripFee||0;
+  var radius=settings.radius||20;
+  var mileageRate=settings.mileageRate||2;
+  var servicePrices=settings.servicePrices||{};
+  var selectedServices=s.answers.situation||s.answers.service||'';
+  var servicePrice=servicePrices[selectedServices]||0;
+  var mileageCost=0;  // Customer enters own distance in flow
+  var total=tripFee+servicePrice+mileageCost;
+  
+  var estimateHtml='<div style="background:var(--surface);border-radius:8px;padding:14px;margin:12px 0;text-align:left">';
+  estimateHtml+='<h3 style="color:var(--accent);margin-bottom:8px">📋 Service Estimate</h3>';
+  estimateHtml+='<div style="font-size:13px;line-height:1.8">';
+  estimateHtml+=msg.replace(/\n/g,'<br>');
+  estimateHtml+='</div>';
+  if(total>0){
+    estimateHtml+='<hr style="border:none;border-top:1px solid var(--border);margin:12px 0">';
+    estimateHtml+='<table style="width:100%;font-size:13px">';
+    estimateHtml+='<tr><td>Trip fee:</td><td style="text-align:right;font-weight:600">$'+tripFee.toFixed(2)+'</td></tr>';
+    if(servicePrice>0)estimateHtml+='<tr><td>Service:</td><td style="text-align:right;font-weight:600">$'+servicePrice.toFixed(2)+'</td></tr>';
+    estimateHtml+='<tr style="border-top:1px solid var(--border)"><td style="padding-top:6px;font-weight:700">Est. Total:</td><td style="text-align:right;padding-top:6px;font-weight:700;color:var(--accent)">$'+total.toFixed(2)+'</td></tr>';
+    estimateHtml+='</table>';
+    estimateHtml+='<p style="color:var(--muted);font-size:11px;margin-top:8px">* Final price may vary. Technician confirms on call.</p>';
   }
+  estimateHtml+='</div>';
+  estimateHtml+='<div style="margin:16px 0"><button class="primary" onclick="confirmSend(''+key+'',''+fullPhone+'',''+email+'',''+subj.replace(/'/g,"\\'")+'')" style="width:100%;background:var(--accent);color:var(--bg);border:none;padding:14px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer">✅ Confirm &amp; Send Request</button></div>';
+  estimateHtml+='<button class="reset-btn" onclick="startFlow(''+key+'')">Start Over</button>';
+  
+  el.innerHTML=estimateHtml;
+  el.classList.add('show');
+  var oE=document.getElementById(key+'Opts')||document.getElementById('mainOpts');if(oE)oE.style.display='none';
+  var iE=document.getElementById(key+'Input')||document.getElementById('mainInput');if(iE)iE.style.display='none';
+  var nE=document.getElementById(key+'Nav')||document.getElementById('mainNav');if(nE)nE.innerHTML='';
+}
+
+function confirmSend(key,fullPhone,email,subj){
+  var f=flows[key],s=state[key],msg=f.build(s.answers);
+  var fullMsg=msg;
+  
+  // Send via both channels
+  if(fullPhone){
+    var smsWin=window.open('sms:'+fullPhone+'?body='+encodeURIComponent(fullMsg),'_blank');
+  }
+  if(email){
+    var emailWin=window.open('mailto:'+email+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(fullMsg),'_blank');
+  }
+  
+  // Show callback popup
+  var cbEl=document.getElementById(key+'Result')||document.getElementById('mainResult');
+  if(cbEl){
+    cbEl.innerHTML='<div style="text-align:center;padding:20px">'
+      +'<div style="font-size:48px;margin-bottom:10px">📞</div>'
+      +'<h3 style="color:var(--green);margin-bottom:8px">Request Sent!</h3>'
+      +'<p style="color:var(--muted);font-size:14px;line-height:1.5">Your service request has been sent. The technician will call you back as soon as possible to confirm the appointment and finalize pricing.</p>'
+      +'<p style="color:var(--text);font-size:13px;margin-top:12px">Please keep your phone nearby.</p>'
+      +'<button class="reset-btn" onclick="startFlow(''+key+'')" style="margin-top:16px">Submit Another Request</button>'
+      +'</div>';
+  }
+}
+
+function copyMsg(key){
+  var msg=flows[key].build(state[key].answers);
+  if(navigator.clipboard){navigator.clipboard.writeText(msg).then(function(){alert('Message copied to clipboard!');}).catch(function(){prompt('Copy this message:',msg);});}else{prompt('Copy this message:',msg);}
 }
 function copyMsg(key){
   var msg=flows[key].build(state[key].answers);
