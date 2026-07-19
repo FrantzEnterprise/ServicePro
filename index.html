@@ -752,10 +752,10 @@ function showResult(key){
 }
 function confirmSend(key,fullPhone,email){
   var f=flows[key],s=state[key],msg=f.build(s.answers),subj="ServicePro: "+key.toUpperCase()+" Service Request";
-  if(fullPhone){window.open('sms:'+fullPhone+'?body='+encodeURIComponent(msg),'_blank');}
-  if(email){window.open('mailto:'+email+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(msg),'_blank');}
   var cbEl=document.getElementById(key+'Result')||document.getElementById('mainResult');
-  if(cbEl){cbEl.innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:48px;margin-bottom:10px">\ud83d\udcde</div><h3 style="color:var(--green);margin-bottom:8px">Request Sent!</h3><p style="color:var(--muted);font-size:14px;line-height:1.5">Your service request has been sent. The technician will call you back as soon as possible to confirm the appointment and finalize pricing.</p><p style="color:var(--text);font-size:13px;margin-top:12px">Please keep your phone nearby.</p><button class="reset-btn" onclick="startFlow(\''+key+'\')" style="margin-top:16px">Submit Another Request</button></div>';}
+  if(cbEl){cbEl.innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:48px;margin-bottom:10px">\u{1f4de}</div><h3 style="color:var(--green);margin-bottom:8px">Request Sent!</h3><p style="color:var(--muted);font-size:14px;line-height:1.5">Your service request has been sent. The technician will call you back as soon as possible to confirm the appointment and finalize pricing.</p><p style="color:var(--text);font-size:13px;margin-top:12px">Please keep your phone nearby.</p><button class="reset-btn" onclick="startFlow(\''+key+'\')" style="margin-top:16px">Submit Another Request</button></div>';}
+  if(fullPhone){window.location.href='sms:'+fullPhone+'?body='+encodeURIComponent(msg);}
+  if(email){window.open('mailto:'+email+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(msg),'_blank');}
 }
 
 function copyMsg(key){
