@@ -117,6 +117,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   .drawer{width:100vw;max-width:100vw;right:-100vw}
   .setup-box{padding:20px}
 }
+
+/* Trade selector */
+.trade-selector{background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;padding:10px 16px}
+.trade-options{display:flex;gap:6px;flex-wrap:nowrap}
+.trade-btn{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-size:13px;white-space:nowrap;transition:.15s;flex-shrink:0}
+.trade-btn:hover{background:var(--surface2);color:var(--text)}
+.trade-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 </style>
 </head>
 <body>
@@ -126,6 +133,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   <a href="help.html">❓</a>
   <button class="gear" id="gearBtn" onclick="openPinModal()" title="Settings">⚙️</button>
 </div>
+
 
 <div class="trade-selector">
   <div class="trade-options" id="tradeOptions">
@@ -140,23 +148,48 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
     <div class="trade-btn" data-trade="pool" onclick="selectTrade('pool')">🏊 Pool Service</div>
   </div>
 </div>
-
-
 <div class="tab-bar" id="tabBar">
-  <div class="tab active" onclick="switchTab('resi')" data-tab="resi">🏠 Residential</div>
-  <div class="tab" onclick="switchTab('comm')" data-tab="comm">🏢 Commercial</div>
-  <div class="tab" onclick="switchTab('auto')" data-tab="auto">🚗 Automotive</div>
-  <div class="tab" onclick="switchTab('safe')" data-tab="safe">🔒 Safe</div>
+  <div class="tab" onclick="openPinModal()" id="tabHome">🏠</div>
 </div>
 
-<div class="panel active" id="panel-main"><div class="wrap"><div class="flow-card" id="mainFlow">
-  <div class="flow-step-dots" id="mainDots"></div>
-  <div class="flow-step" id="mainStepLabel">Step 1 of 6</div>
-  <div class="flow-q" id="mainQ"></div>
-  <div class="flow-options" id="mainOpts"></div>
-  <div class="flow-input" id="mainInput" style="display:none"></div>
-  <div class="result" id="mainResult"></div>
-  <div class="flow-nav" id="mainNav"></div>
+<div class="panel active" id="panel-resi"><div class="wrap"><div class="flow-card" id="resiFlow">
+  <div class="flow-step-dots" id="resiDots"></div>
+  <div class="flow-step" id="resiStepLabel">Step 1 of 6</div>
+  <div class="flow-q" id="resiQ"></div>
+  <div class="flow-options" id="resiOpts"></div>
+  <div class="flow-input" id="resiInput" style="display:none"></div>
+  <div class="result" id="resiResult"></div>
+  <div class="flow-nav" id="resiNav"></div>
+</div></div></div>
+
+<div class="panel" id="panel-comm"><div class="wrap"><div class="flow-card" id="commFlow">
+  <div class="flow-step-dots" id="commDots"></div>
+  <div class="flow-step" id="commStepLabel">Step 1 of 6</div>
+  <div class="flow-q" id="commQ"></div>
+  <div class="flow-options" id="commOpts"></div>
+  <div class="flow-input" id="commInput" style="display:none"></div>
+  <div class="result" id="commResult"></div>
+  <div class="flow-nav" id="commNav"></div>
+</div></div></div>
+
+<div class="panel" id="panel-auto"><div class="wrap"><div class="flow-card" id="autoFlow">
+  <div class="flow-step-dots" id="autoDots"></div>
+  <div class="flow-step" id="autoStepLabel">Step 1 of 6</div>
+  <div class="flow-q" id="autoQ"></div>
+  <div class="flow-options" id="autoOpts"></div>
+  <div class="flow-input" id="autoInput" style="display:none"></div>
+  <div class="result" id="autoResult"></div>
+  <div class="flow-nav" id="autoNav"></div>
+</div></div></div>
+
+<div class="panel" id="panel-safe"><div class="wrap"><div class="flow-card" id="safeFlow">
+  <div class="flow-step-dots" id="safeDots"></div>
+  <div class="flow-step" id="safeStepLabel">Step 1 of 6</div>
+  <div class="flow-q" id="safeQ"></div>
+  <div class="flow-options" id="safeOpts"></div>
+  <div class="flow-input" id="safeInput" style="display:none"></div>
+  <div class="result" id="safeResult"></div>
+  <div class="flow-nav" id="safeNav"></div>
 </div></div></div>
 
 <!-- ====== PIN UNLOCK MODAL ====== -->
@@ -315,20 +348,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 </div>
 <p style="color:var(--muted);font-size:11px;margin:0 0 6px">Trip fee added for addresses within radius. Mileage applies beyond radius.</p>
 <div class="section-title">💰 Pricing</div>
-<label>Trip fee</label>
-<div style="display:flex;gap:6px;align-items:center">
-  <span style="color:var(--muted);font-size:13px">$</span>
-  <input type="number" id="setTripFee" min="0" step="5" value="0" style="width:100px">
+<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px">
+  <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text)">Trip fee $ <input type="number" id="setTripFee" placeholder="65" min="0" step="5" style="width:70px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:12px" onchange="savePricing()"></label>
+  <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text)">Radius (mi) <input type="number" id="setRadius" placeholder="20" min="0" step="5" style="width:60px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:12px" onchange="savePricing()"></label>
+  <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text)">$/mi beyond <input type="number" id="setMileRate" placeholder="2" min="0" step="0.5" style="width:60px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:12px" onchange="savePricing()"></label>
 </div>
-<label>Service area radius (miles)</label>
-<input type="number" id="setRadius" min="0" step="1" value="20" style="width:100px">
-<label>Mileage rate ($/mi beyond radius)</label>
-<div style="display:flex;gap:6px;align-items:center">
-  <span style="color:var(--muted);font-size:13px">$</span>
-  <input type="number" id="setMileageRate" min="0" step="1" value="2" style="width:100px">
-</div>
+<p style="color:var(--muted);font-size:11px;margin:0 0 6px">Trip fee added for addresses within radius. Mileage applies beyond radius.</p>
 <div class="section-title">🔧 Services You Offer</div>
-<p style="color:var(--muted);font-size:11px;margin-bottom:6px">Check the services you provide. Set the price next to each service.</p>
+<p style="color:var(--muted);font-size:11px;margin-bottom:6px">Check the services you provide. Clients only see what you offer.</p>
 <div id="settingsServices"></div>
 <div class="section-title">🔒 Change PIN</div>
 <label>New PIN (4-6 digits — leave blank to keep current)</label>
@@ -358,7 +385,7 @@ function sha256(str){
 
 var defaultSettings = {
   bizName:'Frantz Locksmith Service',phone:'',email:'',country:'1',
-  tabs:{resi:true,comm:true,auto:true,safe:true},tripFee:0,radius:20,mileageRate:2,servicePrices:{},
+  tabs:{resi:true,comm:true,auto:true,safe:true},tripFee:65,radius:20,mileageRate:2,
   services:{
     resi:["Locked out","Need rekey","Lock repair","New install","Keys need duplication"],
     comm:["Office","Warehouse","Retail","Medical","School/Church","Other commercial"],
@@ -390,6 +417,12 @@ function loadSettings(){
   applySettings();
 }
 
+function savePricing(){
+  settings.tripFee=parseFloat(document.getElementById('setTripFee').value)||0;
+  settings.radius=parseFloat(document.getElementById('setRadius').value)||0;
+  settings.mileageRate=parseFloat(document.getElementById('setMileRate').value)||0;
+  saveSettings();
+}
 function saveSettings(){
   localStorage.setItem('servicepro_settings',JSON.stringify(settings));
   applySettings();
@@ -403,7 +436,7 @@ function savePricing(){
 
 function applySettings(){
   var s=settings;
-  document.querySelectorAll('.tab-bar .tab').forEach(function(t){var k=t.getAttribute('data-tab');if(!k){t.classList.remove('hidden');return;}if(s.tabs[k])t.classList.remove('hidden');else{t.classList.add('hidden');t.classList.remove('active');}});
+  document.querySelectorAll('.tab-bar .tab').forEach(function(t){var k=t.getAttribute('data-tab');if(!k)return;if(s.tabs[k])t.classList.remove('hidden');else{t.classList.add('hidden');t.classList.remove('active');}});
   var vt=document.querySelectorAll('.tab-bar .tab:not(.hidden)');
   if(vt.length>0){var ha=false;vt.forEach(function(t){if(t.classList.contains('active'))ha=true;});if(!ha){vt[0].classList.add('active');switchTab(vt[0].getAttribute('data-tab'));}}
   for(var k in s.tabs){var p=document.getElementById('panel-'+k);if(p){p.style.display=s.tabs[k]?'':'none';if(s.tabs[k]&&document.querySelector('.tab-bar .tab[data-tab="'+k+'"].active'))p.classList.add('active');}}
@@ -430,7 +463,6 @@ function initSetupTabs(){
   }
 }
 
-
 function selectTrade(trade){
   currentTrade=trade;
   var btns=document.querySelectorAll('.trade-btn');
@@ -455,7 +487,6 @@ function selectTrade(trade){
   switchTab(currentSub);
   startFlow(currentSub);
 }
-
 function setupNext(n){
   try{
     if(n===1){
@@ -593,7 +624,7 @@ function updateSettingsDrawer(){
   document.getElementById('setFontSize').value=s.fontSize;
   document.getElementById('setTripFee').value=s.tripFee||0;
   document.getElementById('setRadius').value=s.radius||20;
-  document.getElementById('setMileageRate').value=s.mileageRate||2;
+  document.getElementById('setMileRate').value=s.mileageRate||2;
   // Populate pricing fields
   if(document.getElementById('setTripFee')&&s.tripFee!==undefined){
     document.getElementById('setTripFee').value=s.tripFee;
@@ -669,9 +700,6 @@ document.addEventListener('input',function(e){
   if(id==='setBgImg'){s.bgImg=e.target.value;saveSettings();}
   if(id==='setLogo'){s.logo=e.target.value;saveSettings();}
   if(id==='setFontSize'){s.fontSize=e.target.value;saveSettings();}
-  if(id==='setTripFee'){s.tripFee=parseFloat(e.target.value)||0;saveSettings();}
-  if(id==='setRadius'){s.radius=parseFloat(e.target.value)||20;saveSettings();}
-  if(id==='setMileageRate'){s.mileageRate=parseFloat(e.target.value)||2;saveSettings();}
 });
 function exportSettings(){
   var blob=new Blob([JSON.stringify(settings,null,2)],{type:'application/json'});
@@ -729,17 +757,9 @@ var trades = {
   tree:{icon:"\ud83c\udf33",subs:[]},
   pool:{icon:"\ud83c\udfca",subs:[]}
 };
-var currentTrade="locksmith";
-var currentSub="resi";
-var tradeFlows={};
-for(var tk in trades){
-  tradeFlows[tk]={flows:{},subs:trades[tk].subs};
-}
-// Link locksmith flows to tradeFlows
-var lt=trades.locksmith;
-lt.subs.forEach(function(s){
-  tradeFlows.locksmith.flows[s.key]=flows[s.key];
-});
+var currentTrade="locksmith";var currentSub="resi";var tradeFlows={};
+for(var tk in trades){tradeFlows[tk]={flows:{},subs:trades[tk].subs};}
+lt=trades.locksmith;lt.subs.forEach(function(s){tradeFlows.locksmith.flows[s.key]=flows[s.key];});
 
 var state={};
 function startFlow(key){state[key]={answers:{},step:0,started:true};renderStep(key);}
@@ -772,75 +792,28 @@ function answer(key,val){var f=flows[key],s=state[key],step=f.steps[s.step];s.an
 function answerInput(key){var f=flows[key],s=state[key],step=f.steps[s.step];var val=document.getElementById(key+'InputField').value.trim();if(!val)return;s.answers[step.key]=val;s.step++;if(s.step>=f.steps.length)showResult(key);else renderStep(key);}
 function back(key){var s=state[key];if(s.step>0){s.step--;renderStep(key);}}
 function showResult(key){
-  if(!flows[key]&&tradeFlows[currentTrade]&&tradeFlows[currentTrade].flows[key]){
-    flows[key]=tradeFlows[currentTrade].flows[key];
-  }
   var f=flows[key],s=state[key],msg=f.build(s.answers),el=document.getElementById(key+'Result')||document.getElementById('mainResult'),subj="ServicePro: "+key.toUpperCase()+" Service Request";
-  var phone=settings.phone||'';
-  var country=settings.country||'1';
-  var fullPhone='+'+country+phone.replace(/[^\d]/g,'');
-  var email=settings.email||'';
-  
-  // Calculate estimate
-  var tripFee=settings.tripFee||0;
-  var radius=settings.radius||20;
-  var mileageRate=settings.mileageRate||2;
-  var servicePrices=settings.servicePrices||{};
-  var selectedServices=s.answers.situation||s.answers.service||'';
-  var servicePrice=servicePrices[selectedServices]||0;
-  var total=tripFee+servicePrice;
-  
-  var est='<div style="background:var(--surface);border-radius:8px;padding:14px;margin:12px 0;text-align:left">';
-  est+='<h3 style="color:var(--accent);margin-bottom:8px">📋 Service Estimate</h3>';
-  est+='<div style="font-size:13px;line-height:1.8">';
-  est+=msg.replace(/\n/g,'<br>');
-  est+='</div>';
-  if(total>0){
-    est+='<hr style="border:none;border-top:1px solid var(--border);margin:12px 0">';
-    est+='<table style="width:100%;font-size:13px">';
-    est+='<tr><td>Trip fee:</td><td style="text-align:right;font-weight:600">$'+tripFee.toFixed(2)+'</td></tr>';
-    if(servicePrice>0)est+='<tr><td>Service:</td><td style="text-align:right;font-weight:600">$'+servicePrice.toFixed(2)+'</td></tr>';
-    est+='<tr style="border-top:1px solid var(--border)"><td style="padding-top:6px;font-weight:700">Est. Total:</td><td style="text-align:right;padding-top:6px;font-weight:700;color:var(--accent)">$'+total.toFixed(2)+'</td></tr>';
-    est+='</table>';
-    est+='<p style="color:var(--muted);font-size:11px;margin-top:8px">* Final price may vary. Technician confirms on call.</p>';
-  }
-  est+='</div>';
-  est+='<div style="margin:16px 0"><button onclick="confirmSend(\''+key+'\',\''+fullPhone+'\',\''+email+'\',\''+subj.replace(/'/g,"\\'")+'\')" style="width:100%;background:var(--accent);color:var(--bg);border:none;padding:14px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer">✅ Confirm & Send Request</button></div>';
+  var phone=settings.phone||'';var country=settings.country||'1';var fullPhone='+'+country+phone.replace(/[^\d]/g,'');var email=settings.email||'';
+  var tripFee=settings.tripFee||0;var total=tripFee;
+  var est='<div style="background:var(--surface);border-radius:8px;padding:14px;margin:12px 0;text-align:left"><h3 style="color:var(--accent);margin-bottom:8px">📋 Service Estimate</h3><div style="font-size:13px;line-height:1.8">'+msg.replace(/\n/g,'<br>')+'</div>';
+  if(total>0){est+='<hr style="border:none;border-top:1px solid var(--border);margin:12px 0"><table style="width:100%;font-size:13px"><tr><td>Trip fee:</td><td style="text-align:right;font-weight:600">$'+tripFee.toFixed(2)+'</td></tr><tr style="border-top:1px solid var(--border)"><td style="padding-top:6px;font-weight:700">Est. Total:</td><td style="text-align:right;padding-top:6px;font-weight:700;color:var(--accent)">$'+total.toFixed(2)+'</td></tr></table><p style="color:var(--muted);font-size:11px;margin-top:8px">* Final price may vary. Technician confirms on call.</p>';}
+  est+='</div><div style="margin:16px 0"><button onclick="confirmSend(\''+key+'\',\''+fullPhone+'\',\''+email+'\')" style="width:100%;background:var(--accent);color:var(--bg);border:none;padding:14px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer">✅ Confirm & Send Request</button></div>';
   est+='<button class="reset-btn" onclick="startFlow(\''+key+'\')">Start Over</button>';
-  
-  el.innerHTML=est;
-  el.classList.add('show');
+  el.innerHTML=est;el.classList.add('show');
   var oE=document.getElementById(key+'Opts')||document.getElementById('mainOpts');if(oE)oE.style.display='none';
   var iE=document.getElementById(key+'Input')||document.getElementById('mainInput');if(iE)iE.style.display='none';
   var nE=document.getElementById(key+'Nav')||document.getElementById('mainNav');if(nE)nE.innerHTML='';
 }
-
-function confirmSend(key,fullPhone,email,subj){
-  var f=flows[key],s=state[key],msg=f.build(s.answers);
-  var fullMsg=msg;
-  
-  if(fullPhone){
-    window.open('sms:'+fullPhone+'?body='+encodeURIComponent(fullMsg),'_blank');
-  }
-  if(email){
-    window.open('mailto:'+email+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(fullMsg),'_blank');
-  }
-  
+function confirmSend(key,fullPhone,email){
+  var f=flows[key],s=state[key],msg=f.build(s.answers),subj="ServicePro: "+key.toUpperCase()+" Service Request";
+  if(fullPhone){window.open('sms:'+fullPhone+'?body='+encodeURIComponent(msg),'_blank');}
+  if(email){window.open('mailto:'+email+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(msg),'_blank');}
   var cbEl=document.getElementById(key+'Result')||document.getElementById('mainResult');
-  if(cbEl){
-    cbEl.innerHTML='<div style="text-align:center;padding:20px">'
-      +'<div style="font-size:48px;margin-bottom:10px">📞</div>'
-      +'<h3 style="color:var(--green);margin-bottom:8px">Request Sent!</h3>'
-      +'<p style="color:var(--muted);font-size:14px;line-height:1.5">Your service request has been sent. The technician will call you back as soon as possible to confirm the appointment and finalize pricing.</p>'
-      +'<p style="color:var(--text);font-size:13px;margin-top:12px">Please keep your phone nearby.</p>'
-      +'<button class="reset-btn" onclick="startFlow(\''+key+'\')" style="margin-top:16px">Submit Another Request</button>'
-      +'</div>';
-  }
+  if(cbEl){cbEl.innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:48px;margin-bottom:10px">📞</div><h3 style="color:var(--green);margin-bottom:8px">Request Sent!</h3><p style="color:var(--muted);font-size:14px;line-height:1.5">Your service request has been sent. The technician will call you back as soon as possible to confirm the appointment and finalize pricing.</p><p style="color:var(--text);font-size:13px;margin-top:12px">Please keep your phone nearby.</p><button class="reset-btn" onclick="startFlow(\''+key+'\')" style="margin-top:16px">Submit Another Request</button></div>';}
 }
-
 function copyMsg(key){
   var msg=flows[key].build(state[key].answers);
-  if(navigator.clipboard){navigator.clipboard.writeText(msg).then(function(){alert('Message copied to clipboard!');}).catch(function(){prompt('Copy this message:',msg);});}else{prompt('Copy this message:',msg);}
+  if(navigator.clipboard){navigator.clipboard.writeText(msg).then(function(){alert('Copied!');}).catch(function(){prompt('Copy:',msg);});}else{prompt('Copy:',msg);}
 }
 function copyMsg(key){
   var msg=flows[key].build(state[key].answers);
