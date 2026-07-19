@@ -386,7 +386,6 @@ function saveSettings(){
   localStorage.setItem('servicepro_settings',JSON.stringify(settings));
   applySettings();
 }
-
 function applySettings(){
   var s=settings;
   document.querySelectorAll('.tab-bar .tab').forEach(function(t){var k=t.getAttribute('data-tab');if(!k)return;if(s.tabs[k])t.classList.remove('hidden');else{t.classList.add('hidden');t.classList.remove('active');}});
@@ -572,7 +571,7 @@ function updateSettingsDrawer(){
   // Populate pricing fields
   if(document.getElementById('setTripFee')&&s.tripFee!==undefined){
     document.getElementById('setTripFee').value=s.tripFee;
-    document.getElementById('setRadius').value=s.radius||20;
+    document.getElementById('setRadius').value=s.serviceRadius;
     document.getElementById('setMileRate').value=s.mileageRate;
   }
 
@@ -614,13 +613,13 @@ function updateSettingsDrawer(){
         var pi=document.createElement('input');
         pi.type='number';pi.min='0';pi.step='5';pi.placeholder='$';
         pi.style.cssText='width:48px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:2px 4px;font-size:11px;text-align:center';
-        if(s.prices&&s.prices[sk]&&s.prices[sk][opt])pi.value=s.prices[sk][opt];
+        if(s.prices&&s.prices[serviceKey]&&s.prices[serviceKey][optionName])pi.value=s.prices[serviceKey][optionName];
         pi.onchange=function(sk,on,el){return function(){
           if(!s.prices)s.prices={};
           if(!s.prices[sk])s.prices[sk]={};
           s.prices[sk][on]=parseFloat(el.value)||0;
           saveSettings();
-        };}(sk,opt,pi);
+        };}(serviceKey,optionName,pi);
         cb.appendChild(pi);
         cb.appendChild(document.createTextNode(' '+opt));
         div.appendChild(cb);
@@ -760,6 +759,6 @@ var h=location.hash.replace('#','');
 if(h&&document.getElementById('panel-'+h)){switchTab(h);}else{selectTrade('locksmith');}
 </script>
 </body>
-<!-- ServicePro v5.3 -->
-<!-- ServicePro v5.3-ghp -->
+<!-- ServicePro v5 -->
+<!-- v5.3b -->
 </html>
