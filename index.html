@@ -627,7 +627,7 @@ function updateSettingsDrawer(){
         var pi=document.createElement('input');
         pi.type='number';pi.min='0';pi.step='5';pi.placeholder='$';
         pi.style.cssText='width:48px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:2px 4px;font-size:11px;text-align:center';
-        if(s.prices&&s.prices[serviceKey]&&s.prices[serviceKey][optionName])pi.value=s.prices[serviceKey][optionName];
+        if(s.prices&&s.prices[sk]&&s.prices[sk][opt])pi.value=s.prices[sk][opt];
         pi.onchange=function(sk,on,el){return function(){
           if(!s.prices)s.prices={};
           if(!s.prices[sk])s.prices[sk]={};
