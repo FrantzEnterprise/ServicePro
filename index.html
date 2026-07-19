@@ -318,13 +318,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text)">$/mi beyond <input type="number" id="setMileRate" placeholder="2" min="0" step="0.5" style="width:60px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:12px" onchange="savePricing()"></label>
 </div>
 <p style="color:var(--muted);font-size:11px;margin:0 0 6px">Trip fee added for addresses within radius. Mileage applies beyond radius.</p>
-<div class="section-title">💰 Pricing</div>
-<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px">
-  <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text)">Trip fee $ <input type="number" id="setTripFee" placeholder="65" min="0" step="5" style="width:70px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:12px" onchange="savePricing()"></label>
-  <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text)">Radius (mi) <input type="number" id="setRadius" placeholder="20" min="0" step="5" style="width:60px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:12px" onchange="savePricing()"></label>
-  <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text)">$/mi beyond <input type="number" id="setMileRate" placeholder="2" min="0" step="0.5" style="width:60px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:12px" onchange="savePricing()"></label>
-</div>
-<p style="color:var(--muted);font-size:11px;margin:0 0 6px">Trip fee added for addresses within radius. Mileage applies beyond radius.</p>
 <div class="section-title">🔧 Services You Offer</div>
 <p style="color:var(--muted);font-size:11px;margin-bottom:6px">Check the services you provide. Clients only see what you offer.</p>
 <div id="settingsServices"></div>
@@ -392,12 +385,6 @@ function savePricing(){settings.tripFee=parseFloat(document.getElementById("setT
 function saveSettings(){
   localStorage.setItem('servicepro_settings',JSON.stringify(settings));
   applySettings();
-}
-function savePricing(){
-  settings.tripFee=parseFloat(document.getElementById('setTripFee').value)||0;
-  settings.serviceRadius=parseFloat(document.getElementById('setRadius').value)||0;
-  settings.mileageRate=parseFloat(document.getElementById('setMileRate').value)||0;
-  saveSettings();
 }
 
 function applySettings(){
@@ -585,7 +572,7 @@ function updateSettingsDrawer(){
   // Populate pricing fields
   if(document.getElementById('setTripFee')&&s.tripFee!==undefined){
     document.getElementById('setTripFee').value=s.tripFee;
-    document.getElementById('setRadius').value=s.serviceRadius;
+    document.getElementById('setRadius').value=s.radius||20;
     document.getElementById('setMileRate').value=s.mileageRate;
   }
 
