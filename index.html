@@ -49,12 +49,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .flow-step-dots span.active{background:var(--accent)}
 .flow-step-dots span.done{background:var(--green)}
 
-/* Trade selector */
-.trade-selector{background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;padding:10px 16px}
-.trade-options{display:flex;gap:6px;flex-wrap:nowrap}
-.trade-btn{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-size:13px;white-space:nowrap;transition:.15s;flex-shrink:0}
-.trade-btn:hover{background:var(--surface2);color:var(--text)}
-.trade-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 /* Setup wizard */
 .setup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px}
 .setup-overlay.hidden{display:none}
@@ -374,7 +368,7 @@ function applySettings(){
   document.querySelectorAll('.tab-bar .tab').forEach(function(t){var k=t.getAttribute('data-tab');if(s.tabs[k])t.classList.remove('hidden');else{t.classList.add('hidden');t.classList.remove('active');}});
   var vt=document.querySelectorAll('.tab-bar .tab:not(.hidden)');
   if(vt.length>0){var ha=false;vt.forEach(function(t){if(t.classList.contains('active'))ha=true;});if(!ha){vt[0].classList.add('active');switchTab(vt[0].getAttribute('data-tab'));}}
-  for(var k in s.tabs){var p=document.getElementById('panel-'+k)||document.getElementById('panel-main');if(p){p.style.display=s.tabs[k]?'':'none';if(s.tabs[k]&&document.querySelector('.tab-bar .tab[data-tab="'+k+'"].active'))p.classList.add('active');}}
+  // Panel visibility handled by panels system
   var r=document.documentElement;r.style.setProperty('--accent',s.accent);r.style.setProperty('--accent2',s.accent2);r.style.setProperty('--bg',s.bg);
   document.body.style.backgroundImage=s.bgImg?'url('+s.bgImg+')':'';document.body.style.backgroundSize=s.bgImg?'cover':'';document.body.style.backgroundAttachment=s.bgImg?'fixed':'';
   var be=document.querySelector('.brand');
@@ -383,12 +377,6 @@ function applySettings(){
   updateSettingsDrawer();
 }
 
-/* Trade selector */
-.trade-selector{background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;padding:10px 16px}
-.trade-options{display:flex;gap:6px;flex-wrap:nowrap}
-.trade-btn{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-size:13px;white-space:nowrap;transition:.15s;flex-shrink:0}
-.trade-btn:hover{background:var(--surface2);color:var(--text)}
-.trade-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 /* Setup wizard */
 var setupStep=0;
 function initSetupTabs(){
@@ -420,6 +408,7 @@ function selectTrade(trade){
       tab.textContent=s.label;
       tab.onclick=function(k){return function(){switchTab(k);startFlow(k);};}(s.key);
       tab.id='tab-'+s.key;
+      tab.setAttribute('data-tab',s.key);
       tabBar.appendChild(tab);
     });
   }
@@ -655,11 +644,12 @@ function switchTab(id){
   document.querySelectorAll('.tab-bar .tab').forEach(function(t){t.classList.remove('active');});
   document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
   var tab=document.querySelector('.tab-bar .tab[data-tab="'+id+'"]');if(tab)tab.classList.add('active');
-  var panel=document.getElementById('panel-'+id);if(panel)panel.classList.add('active');
+  var panel=document.getElementById('panel-'+id)||document.getElementById('panel-main');if(panel)panel.classList.add('active');
   history.replaceState(null,'','#'+id);
   if(!state[id]||!state[id].started)startFlow(id);
 }
 var currentTrade="locksmith";var currentSub="resi";var tradeFlows={};
+var flows={};
 var state={};
 function startFlow(key){state[key]={answers:{},step:0,started:true};renderStep(key);}
 function renderStep(key){
@@ -670,10 +660,10 @@ function renderStep(key){
 
   var f=flows[key],s=state[key],step=f.steps[s.step],total=f.steps.length;
   var dh='';for(var i=0;i<total;i++){var c=i===s.step?'active':i<s.step?'done':'';dh+='<span class="'+c+'"></span>';}
-  document.getElementById(key+'Dots').innerHTML=dh;
-  document.getElementById(key+'StepLabel').textContent='Step '+(s.step+1)+' of '+total;
-  document.getElementById(key+'Q').textContent=step.q;
-  var oe=document.getElementById(key+'Opts'),ie=document.getElementById(key+'Input'),ne=document.getElementById(key+'Nav');
+  var dotsEl=document.getElementById(key+'Dots')||document.getElementById('mainDots');if(dotsEl)dotsEl.innerHTML=dh;
+  var slEl=document.getElementById(key+'StepLabel')||document.getElementById('mainStepLabel');if(slEl)slEl.textContent='Step '+(s.step+1)+' of '+total;
+  var qEl=document.getElementById(key+'Q')||document.getElementById('mainQ');if(qEl)qEl.textContent=step.q;
+  var oe=document.getElementById(key+'Opts')||document.getElementById('mainOpts'),ie=document.getElementById(key+'Input')||document.getElementById('mainInput'),ne=document.getElementById(key+'Nav')||document.getElementById('mainNav');
   if(step.opts){
     oe.style.display='flex';ie.style.display='none';
     // Filter options by locksmith's selected services (first step of each flow)
@@ -690,7 +680,7 @@ function renderStep(key){
     setTimeout(function(){var el=document.getElementById(key+'InputField');if(el)el.focus();},50);
   }
   if(step.opts){ne.innerHTML='';}else{var bb=s.step>0?'<button onclick="back(\''+key+'\')">← Back</button>':'';ne.innerHTML=bb+'<button class="primary" onclick="answerInput(\''+key+'\')">Continue →</button>';}
-  document.getElementById(key+'Result').classList.remove('show');
+  var rEl=document.getElementById(key+'Result')||document.getElementById('mainResult');if(rEl)rEl.classList.remove('show');
 }
 function answer(key,val){var f=flows[key],s=state[key],step=f.steps[s.step];s.answers[step.key]=val;s.step++;if(s.step>=f.steps.length)showResult(key);else renderStep(key);}
 function answerInput(key){var f=flows[key],s=state[key],step=f.steps[s.step];var val=document.getElementById(key+'InputField').value.trim();if(!val)return;s.answers[step.key]=val;s.step++;if(s.step>=f.steps.length)showResult(key);else renderStep(key);}
@@ -700,7 +690,7 @@ function showResult(key){
     flows[key]=tradeFlows[currentTrade].flows[key];
   }
 
-  var f=flows[key],s=state[key],msg=f.build(s.answers),el=document.getElementById(key+'Result'),subj="ServicePro: "+key.toUpperCase()+" Service Request";
+  var f=flows[key],s=state[key],msg=f.build(s.answers),el=document.getElementById(key+'Result')||document.getElementById('mainResult'),subj="ServicePro: "+key.toUpperCase()+" Service Request";
   var phone=settings.phone||'';
   var country=settings.country||'1';
   var fullPhone='+'+country+phone.replace(/[^\d]/g,'');
@@ -710,7 +700,7 @@ function showResult(key){
     (email?'<a class="email" href="mailto:'+email+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(msg)+'">Send via Email</a>':'')+
     '</div><button class="reset-btn" onclick="startFlow(\''+key+'\')">Start Over</button>'+
     '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)"><p style="color:var(--muted);font-size:12px;margin-bottom:6px">Also need another service?</p><div id="addServiceBtns"></div></div>';
-  el.classList.add('show');document.getElementById(key+'Opts').style.display='none';document.getElementById(key+'Input').style.display='none';document.getElementById(key+'Nav').innerHTML='';
+  el.classList.add('show');var oE=document.getElementById(key+'Opts')||document.getElementById('mainOpts');if(oE)oE.style.display='none';var iE=document.getElementById(key+'Input')||document.getElementById('mainInput');if(iE)iE.style.display='none';var nE=document.getElementById(key+'Nav')||document.getElementById('mainNav');if(nE)nE.innerHTML='';
   // Build "Add another service" buttons (only tabs that are enabled)
   var asb=document.getElementById('addServiceBtns');
   if(asb){
