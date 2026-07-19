@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,user-scalable=yes">
+<title>ServicePro — Get Your Service Estimate</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--bg2:#161b22;--surface:#21262d;--surface2:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--accent2:#f0883e;--green:#3fb950;--orange:#d29922;--border:#30363d;--radius:12px;--font:'Inter','Segoe UI',system-ui,sans-serif}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+.top{background:var(--bg2);padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.top .brand{font-weight:700;font-size:15px;display:flex;align-items:center;gap:5px;flex-shrink:0}
+.top a{color:var(--cyan);font-size:12px;text-decoration:none;padding:3px 8px;background:var(--surface);border-radius:4px}
+.top .gear{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:3px;display:none}
+.top .gear:hover{color:var(--text)}
+.top .gear.show{display:inline}
+.tab-bar{display:flex;gap:1px;overflow-x:auto;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:43px;z-index:99}
+.tab-bar .tab{padding:8px 14px;cursor:pointer;white-space:nowrap;background:transparent;color:var(--muted);font-size:13px;border-bottom:2px solid transparent;flex-shrink:0;transition:.15s}
+.tab-bar .tab:hover{color:var(--text);background:var(--surface)}
+.tab-bar .tab.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--bg)}
+.tab-bar .tab.hidden{display:none}
+.panel{display:none}
+.panel.active{display:block}
+.wrap{max-width:700px;margin:0 auto;padding:20px 16px}
+.flow-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:12px;min-height:300px;display:flex;flex-direction:column}
+.flow-step{font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.flow-q{font-size:18px;font-weight:600;margin-bottom:16px;line-height:1.4}
+.flow-options{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.flow-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;font-size:15px;color:var(--text);text-align:left;transition:.15s;display:flex;align-items:center;gap:10px}
+.flow-btn:hover{background:var(--surface2);border-color:var(--accent);transform:translateX(3px)}
+.flow-btn .icon{font-size:20px;flex-shrink:0}
+.flow-input{margin-bottom:12px}
+.flow-input input,.flow-input textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:15px;color:var(--text);font-family:var(--font)}
+.flow-input input:focus,.flow-input textarea:focus{outline:none;border-color:var(--accent)}
+.flow-nav{display:flex;gap:8px;margin-top:auto;padding-top:12px}
+.flow-nav button{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 16px;cursor:pointer;font-size:13px;color:var(--text)}
+.flow-nav button:hover{background:var(--surface2)}
+.flow-nav button.primary{background:var(--accent);color:var(--bg);border-color:var(--accent);font-weight:600}
+.result{display:none;background:var(--bg2);border:1px solid var(--accent);border-radius:var(--radius);padding:20px;margin-top:8px;text-align:center}
+.result.show{display:block}
+.result h3{color:var(--green);font-size:16px;margin-bottom:10px}
+.result .msg{background:var(--surface);border-radius:8px;padding:14px;text-align:left;font-size:13px;line-height:1.6;margin:12px 0;white-space:pre-wrap}
+.result .send-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.result .send-links a{background:var(--accent);color:var(--bg);text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px}
+.result .send-links a.email{background:var(--orange)}
+.result .reset-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:6px;cursor:pointer;margin-top:12px;font-size:12px}
+.flow-step-dots{display:flex;gap:4px;margin-bottom:12px}
+.flow-step-dots span{width:8px;height:8px;border-radius:50%;background:var(--surface2)}
+.flow-step-dots span.active{background:var(--accent)}
+.flow-step-dots span.done{background:var(--green)}
+
+/* Setup wizard */
+.setup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px}
+.setup-overlay.hidden{display:none}
+.setup-box{background:var(--bg2);border:1px solid var(--accent);border-radius:var(--radius);padding:28px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto}
+.setup-box h2{font-size:20px;color:var(--accent);margin-bottom:4px}
+.setup-box p{color:var(--muted);font-size:13px;margin-bottom:12px}
+.setup-box .step-ind{text-align:center;font-size:11px;color:var(--muted);margin-bottom:12px;letter-spacing:1px}
+.setup-box label{display:block;color:var(--muted);font-size:12px;margin-top:8px;margin-bottom:3px}
+.setup-box input,.setup-box select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;color:var(--text);font-family:var(--font)}
+.setup-box .toggle-group{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.setup-box .toggle-btn{padding:8px 16px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-size:13px;transition:.15s}
+.setup-box .toggle-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.setup-box .toggle-btn.off{opacity:.4}
+.setup-box .color-row{display:flex;gap:6px;align-items:center}
+.setup-box .color-row input[type=color]{width:44px;height:36px;padding:2px;border-radius:4px;cursor:pointer}
+.setup-box .color-row input[type=text]{flex:1}
+.setup-box .nav-btn{width:100%;background:var(--accent);color:var(--bg);border:none;padding:12px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;margin-top:16px}
+.setup-box .nav-btn:hover{opacity:.85}
+.setup-box .nav-btn.secondary{background:var(--surface);color:var(--text);border:1px solid var(--border);margin-top:8px}
+.setup-box .welcome{text-align:center;padding:10px 0}
+.setup-box .welcome .big-icon{font-size:48px;margin-bottom:10px}
+.setup-box .welcome h2{font-size:22px}
+.setup-box .welcome p{font-size:14px;margin-top:8px}
+.setup-box .pin-input{text-align:center}
+.setup-box .pin-input input{width:120px;text-align:center;font-size:24px;letter-spacing:6px;padding:10px}
+.setup-box .error{color:#f85149;font-size:12px;margin-top:4px;display:none}
+.setup-box hr{border:none;border-top:1px solid var(--border);margin:12px 0}
+.setup-box .setup-help{color:var(--muted);font-size:12px;margin-top:8px}
+.setup-box .setup-help a{color:var(--accent);text-decoration:none}
+
+/* PIN unlock modal */
+.pin-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:250;display:none;align-items:center;justify-content:center;padding:16px}
+.pin-modal.show{display:flex}
+.pin-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;text-align:center;max-width:320px;width:100%}
+.pin-box h3{font-size:16px;color:var(--text);margin-bottom:8px}
+.pin-box input{width:120px;text-align:center;font-size:24px;letter-spacing:6px;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font)}
+.pin-box .err{color:#f85149;font-size:12px;margin-top:6px;display:none}
+.pin-box .sub{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:11px;margin-top:8px;text-decoration:underline}
+
+/* Settings drawer */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none}
+.overlay.show{display:block}
+.drawer{position:fixed;top:0;right:-400px;width:380px;max-width:90vw;height:100%;min-height:100vh;background:var(--bg2);border-left:1px solid var(--border);z-index:201;transition:right .3s;display:flex;flex-direction:column}.drawer.open{right:0}.drawer-header{padding:20px 20px 0}.drawer-body{flex:1;overflow-y:auto;padding:0 20px 20px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.drawer.open{right:0}
+.drawer h2{font-size:17px;color:var(--accent);margin-bottom:16px}
+.drawer label{display:block;color:var(--muted);font-size:12px;margin-top:10px;margin-bottom:3px}
+.drawer input,.drawer select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:13px;color:var(--text);font-family:var(--font)}
+.drawer .close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
+.drawer .close:hover{color:var(--text)}
+.drawer .toggle-group{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+.drawer .toggle-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-size:12px;transition:.15s}
+.drawer .toggle-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.drawer .toggle-btn.off{opacity:.4}
+.drawer .save-btn{width:100%;background:var(--green);color:var(--bg);border:none;padding:10px;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;margin-top:16px}
+.drawer .save-btn:hover{opacity:.85}
+.drawer .color-row{display:flex;gap:6px;align-items:center}
+.drawer .color-row input[type=color]{width:40px;height:34px;padding:2px;border-radius:4px;cursor:pointer}
+.drawer .color-row input[type=text]{flex:1}
+.drawer .section-title{font-size:13px;color:var(--accent2);margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+
+@media(max-width:600px){
+  .wrap{padding:12px}
+  .flow-card{padding:16px;min-height:250px}
+  .flow-q{font-size:16px}
+  .flow-btn{padding:12px 14px;font-size:14px}
+  .drawer{width:100vw;max-width:100vw;right:-100vw}
+  .setup-box{padding:20px}
+}
+
+/* Trade selector */
+.trade-selector{background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;padding:10px 16px}
+.trade-options{display:flex;gap:6px;flex-wrap:nowrap}
+.trade-btn{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-size:13px;white-space:nowrap;transition:.15s;flex-shrink:0}
+.trade-btn:hover{background:var(--surface2);color:var(--text)}
+.trade-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand">🔧 <span>ServicePro</span></div>
+  <a href="help.html">❓</a>
+  <button class="gear" id="gearBtn" onclick="openPinModal()" title="Settings">⚙️</button>
+</div>
+
+
+<div class="trade-selector">
+  <div class="trade-options" id="tradeOptions">
+    <div class="trade-btn active" data-trade="locksmith" onclick="selectTrade('locksmith')">🔐 Locksmith</div>
+    <div class="trade-btn" data-trade="plumbing" onclick="selectTrade('plumbing')">🔧 Plumbing</div>
+    <div class="trade-btn" data-trade="hvac" onclick="selectTrade('hvac')">🌡 HVAC</div>
+    <div class="trade-btn" data-trade="towing" onclick="selectTrade('towing')">🛎 Towing</div>
+    <div class="trade-btn" data-trade="electric" onclick="selectTrade('electric')">⚡ Electric</div>
+    <div class="trade-btn" data-trade="pest" onclick="selectTrade('pest')">🐜 Pest Control</div>
+    <div class="trade-btn" data-trade="garage" onclick="selectTrade('garage')">🚪 Garage Door</div>
+    <div class="trade-btn" data-trade="tree" onclick="selectTrade('tree')">🌳 Tree Service</div>
+    <div class="trade-btn" data-trade="pool" onclick="selectTrade('pool')">🏊 Pool Service</div>
+  </div>
+</div>
+<div class="tab-bar" id="tabBar">
+  <div class="tab" onclick="openPinModal()" id="tabHome">🏠</div>
+</div>
+
+<div class="panel active" id="panel-main"><div class="wrap"><div class="flow-card" id="mainFlow">
+  <div class="flow-step-dots" id="mainDots"></div>
+  <div class="flow-step" id="mainStepLabel">Step 1 of 6</div>
+  <div class="flow-q" id="mainQ"></div>
+  <div class="flow-options" id="mainOpts"></div>
+  <div class="flow-input" id="mainInput" style="display:none"></div>
+  <div class="result" id="mainResult"></div>
+  <div class="flow-nav" id="mainNav"></div>
+
+<!-- ====== PIN UNLOCK MODAL ====== -->
+<div class="pin-modal" id="pinModal">
+  <div class="pin-box">
+    <h3>🔒 Enter PIN</h3>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:10px">Enter the locksmith PIN to access settings.</p>
+    <input type="password" id="pinInput" maxlength="6" inputmode="numeric" pattern="[0-9]*" autocomplete="off" onkeydown="if(event.key==='Enter')checkPin()">
+    <div class="err" id="pinErr">Incorrect PIN</div>
+    <button class="nav-btn" onclick="checkPin()" style="padding:10px;font-size:14px">Unlock</button>
+    <button class="sub" onclick="closePinModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- ====== SETUP WIZARD ====== -->
+<div class="setup-overlay hidden" id="setupOverlay">
+<div class="setup-box" id="setupBox">
+
+  <!-- Step 0: Welcome -->
+  <div class="setup-step" id="setupStep0">
+    <div class="welcome">
+      <div class="big-icon">🔧</div>
+      <h2>Welcome to ServicePro</h2>
+      <p>One-time setup to configure ServicePro for your business. This takes about 2 minutes.</p>
+      <button class="nav-btn" onclick="setupNext(1)">Get Started →</button>
+      <button class="nav-btn secondary" onclick="skipSetup()">Skip — use defaults</button>
+      <div class="setup-help">Need help? <a href="help.html" target="_blank">View Setup Guide</a></div>
+    </div>
+  </div>
+
+  <!-- Step 1: PIN -->
+  <div class="setup-step" id="setupStep1" style="display:none">
+    <div class="step-ind">Step 1 of 7</div>
+    <h2>Create a PIN</h2>
+    <p>This PIN locks the settings so customers can't change your config. 4-6 digits.</p>
+    <div class="pin-input"><input type="password" id="setupPin" maxlength="6" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="****"></div>
+    <label style="margin-top:6px">Confirm PIN</label>
+    <div class="pin-input"><input type="password" id="setupPinConfirm" maxlength="6" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="****"></div>
+    <div class="error" id="pinMatchErr">PINs don't match. Enter 4-6 digits.</div>
+    <button class="nav-btn" onclick="setupNext(2)">Next →</button>
+    <button class="nav-btn secondary" onclick="setupPrev(0)">← Back</button>
+  </div>
+
+  <!-- Step 2: Business name -->
+  <div class="setup-step" id="setupStep2" style="display:none">
+    <div class="step-ind">Step 2 of 7</div>
+    <h2>Your Business Name</h2>
+    <p>This appears in the top bar so customers know who they're contacting.</p>
+    <label>Business name</label>
+    <input type="text" id="setupBizName" placeholder="Your Locksmith Co." value="Frantz Locksmith Service">
+    <button class="nav-btn" onclick="setupNext(3)">Next →</button>
+    <button class="nav-btn secondary" onclick="setupPrev(1)">← Back</button>
+  </div>
+
+  <!-- Step 3: Which services -->
+  <div class="setup-step" id="setupStep3" style="display:none">
+    <div class="step-ind">Step 3 of 7</div>
+    <h2>Which Services Do You Offer?</h2>
+    <p>Toggle the tabs you want customers to see. Turn off anything you don't do.</p>
+    <div class="toggle-group" id="setupTabs"></div>
+    <button class="nav-btn" onclick="setupNext(4)">Next →</button>
+    <button class="nav-btn secondary" onclick="setupPrev(2)">← Back</button>
+  </div>
+
+  <!-- Step 4: Colors -->
+  <div class="setup-step" id="setupStep4" style="display:none">
+    <div class="step-ind">Step 4 of 7</div>
+    <h2>Brand Colors</h2>
+    <p>Match ServicePro to your website. Pick colors or keep the defaults.</p>
+    <label>Accent color (main)</label>
+    <div class="color-row"><input type="color" id="setupAccent" value="#58a6ff"><input type="text" id="setupAccentTxt" placeholder="#58a6ff" oninput="document.getElementById('setupAccent').value=this.value"></div>
+    <label>Secondary accent</label>
+    <div class="color-row"><input type="color" id="setupAccent2" value="#f0883e"><input type="text" id="setupAccent2Txt" placeholder="#f0883e" oninput="document.getElementById('setupAccent2').value=this.value"></div>
+    <label>Background</label>
+    <div class="color-row"><input type="color" id="setupBg" value="#0d1117"><input type="text" id="setupBgTxt" placeholder="#0d1117" oninput="document.getElementById('setupBg').value=this.value"></div>
+    <button class="nav-btn" onclick="setupNext(5)">Next →</button>
+    <button class="nav-btn secondary" onclick="setupPrev(3)">← Back</button>
+  </div>
+
+  <!-- Step 5: Logo & Background Image -->
+  <div class="setup-step" id="setupStep5" style="display:none">
+    <div class="step-ind">Step 5 of 7</div>
+    <h2>Logo & Background</h2>
+    <p>Optional — add a logo URL and a background image URL.</p>
+    <label>Logo URL <span style="color:var(--muted)">(optional)</span></label>
+    <input type="text" id="setupLogo" placeholder="https://your-site.com/logo.png">
+    <label>Background image URL <span style="color:var(--muted)">(optional)</span></label>
+    <input type="text" id="setupBgImg" placeholder="https://your-site.com/bg.jpg">
+    <button class="nav-btn" onclick="setupNext(6)">Next →</button>
+    <button class="nav-btn secondary" onclick="setupPrev(4)">← Back</button>
+  </div>
+
+  <!-- Step 6: Contact Info -->
+  <div class="setup-step" id="setupStep6" style="display:none">
+    <div class="step-ind">Step 6 of 7</div>
+    <h2>Your Contact Info</h2>
+    <p>This phone and email go into the SMS/email links at the end of each flow.</p>
+    <label>Your phone number <span style="color:var(--muted)">(for SMS)</span></label>
+    <div style="display:flex;gap:6px">
+      <select id="setupCountry" style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 8px;font-size:14px;color:var(--text);font-family:var(--font);width:100px;flex-shrink:0">
+        <option value="1">🇺🇸 +1</option>
+        <option value="44">🇬🇧 +44</option>
+        <option value="61">🇦🇺 +61</option>
+        <option value="55">🇧🇷 +55</option>
+        <option value="1-876">🇯🇲 +1-876</option>
+      </select>
+      <input type="tel" id="setupPhone" placeholder="(555) 123-4567" style="flex:1">
+    </div>
+    <label>Your email <span style="color:var(--muted)">(for email links)</span></label>
+    <input type="email" id="setupEmail" placeholder="you@locksmith.com">
+    <button class="nav-btn" onclick="setupNext(7)">Next →</button>
+    <button class="nav-btn secondary" onclick="setupPrev(5)">← Back</button>
+  </div>
+
+  <!-- Step 7: Done -->
+  <div class="setup-step" id="setupStep7" style="display:none">
+    <div class="welcome">
+      <div class="big-icon">✅</div>
+      <h2>All Set!</h2>
+      <p>ServicePro is configured for your business. Customers will see only the services you offer, in your brand colors.</p>
+      <p style="font-size:12px;color:var(--muted)">You can change any setting later by clicking the gear and entering your PIN.</p>
+      <button class="nav-btn" onclick="finishSetup()">Launch ServicePro →</button>
+    </div>
+  </div>
+
+</div>
+</div>
+<!-- ====== SETTINGS DRAWER ====== -->
+<div class="overlay" id="settingsOverlay" onclick="closeSettings()"></div>
+<div class="drawer" id="settingsDrawer">
+<div class="drawer-header">
+<button class="close" onclick="closeSettings()">✕</button>
+<h2>⚙️ Settings</h2>
+</div>
+<div class="drawer-body">
+<p style="color:var(--muted);font-size:12px;margin-bottom:10px">ServicePro configuration — changes save automatically.</p>
+<div class="section-title">🔘 Show / Hide Tabs</div>
+<div class="toggle-group" id="settingsTabs"></div>
+<div class="section-title">🏢 Business</div>
+<label>Business name</label><input type="text" id="setBizName" placeholder="Your Locksmith Co.">
+<label>Your phone</label><div style="display:flex;gap:6px"><select id="setCountry" style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 6px;font-size:13px;color:var(--text);font-family:var(--font);width:85px;flex-shrink:0"><option value="1">🇺🇸+1</option><option value="44">🇬🇧+44</option><option value="61">🇦🇺+61</option><option value="1-876">🇯🇲+1-876</option></select><input type="tel" id="setPhone" placeholder="(555) 123-4567" style="flex:1"></div>
+<label>Your email</label><input type="text" id="setEmail" placeholder="you@locksmith.com">
+<div class="section-title">🎨 Branding & Colors</div>
+<label>Accent color</label>
+<div class="color-row"><input type="color" id="setAccent" value="#58a6ff"><input type="text" id="setAccentTxt" placeholder="#58a6ff" oninput="document.getElementById('setAccent').value=this.value"></div>
+<label>Secondary accent</label>
+<div class="color-row"><input type="color" id="setAccent2" value="#f0883e"><input type="text" id="setAccent2Txt" placeholder="#f0883e" oninput="document.getElementById('setAccent2').value=this.value"></div>
+<label>Background</label>
+<div class="color-row"><input type="color" id="setBg" value="#0d1117"><input type="text" id="setBgTxt" placeholder="#0d1117" oninput="document.getElementById('setBg').value=this.value"></div>
+<label>Background image URL (optional)</label><input type="text" id="setBgImg" placeholder="https://your-site.com/bg.jpg">
+<label>Logo image URL (optional)</label><input type="text" id="setLogo" placeholder="https://your-site.com/logo.png">
+<label>Font size</label>
+<select id="setFontSize"><option value="14px">Small</option><option value="16px" selected>Default</option><option value="18px">Large</option></select>
+<div class="section-title">💰 Pricing</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px">
+  <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text)">Trip fee $ <input type="number" id="setTripFee" placeholder="65" min="0" step="5" style="width:70px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:12px" onchange="savePricing()"></label>
+  <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text)">Radius (mi) <input type="number" id="setRadius" placeholder="20" min="0" step="5" style="width:60px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:12px" onchange="savePricing()"></label>
+  <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text)">$/mi beyond <input type="number" id="setMileRate" placeholder="2" min="0" step="0.5" style="width:60px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:12px" onchange="savePricing()"></label>
+</div>
+<p style="color:var(--muted);font-size:11px;margin:0 0 6px">Trip fee added for addresses within radius. Mileage applies beyond radius.</p>
+<div class="section-title">🔧 Services You Offer</div>
+<p style="color:var(--muted);font-size:11px;margin-bottom:6px">Check the services you provide. Clients only see what you offer.</p>
+<div id="settingsServices"></div>
+<div class="section-title">🔒 Change PIN</div>
+<label>New PIN (4-6 digits — leave blank to keep current)</label>
+<input type="password" id="setNewPin" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="Leave blank to keep current">
+<label>Confirm new PIN</label>
+<input type="password" id="setNewPinConfirm" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="Confirm">
+<div class="section-title">💾 Backup / Restore</div>
+<p style="color:var(--muted);font-size:11px;margin-bottom:6px">Export settings to a file, or import from a previous backup.</p>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+  <button onclick="exportSettings()" style="background:var(--surface);color:var(--text);border:1px solid var(--border);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px">💾 Export</button>
+  <button onclick="document.getElementById('importFile').click()" style="background:var(--surface);color:var(--text);border:1px solid var(--border);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px">📂 Import</button>
+  <button onclick="resetSettings()" style="background:var(--surface);color:#f85149;border:1px solid var(--border);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px">🔄 Reset All</button>
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importSettings(event)">
+</div>
+</div>
+<button class="save-btn" onclick="handleSettingsDone()">✅ Done</button>
+</div>
+
+<script>
+/* ==============================
+   SETTINGS & SETUP
+   ============================== */
+/* Simple PIN hash */
+function sha256(str){
+  var h=0;for(var i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h|=0;}
+  return Math.abs(h).toString(16).padStart(8,'0');
+}
+
+var defaultSettings = {
+  bizName:'Frantz Locksmith Service',phone:'',email:'',country:'1',
+  tabs:{resi:true,comm:true,auto:true,safe:true},tripFee:65,radius:20,mileageRate:2,
+  services:{
+    resi:["Locked out","Need rekey","Lock repair","New install","Keys need duplication"],
+    comm:["Office","Warehouse","Retail","Medical","School/Church","Other commercial"],
+    auto:["Locked out of car","Lost all keys","Key broke in ignition","Need new fob","Trunk locked","Other"],
+    safe:["Home / gun safe","Commercial safe","TL / high security","Antique / vintage","Floor / wall safe","Jewelry chest"]
+  },
+  tripFee:65,serviceRadius:20,mileageRate:2,
+  prices:{
+    resi:{"Locked out":85,"Need rekey":45,"Lock repair":65,"New install":95,"Keys need duplication":15},
+    comm:{"Office":75,"Warehouse":95,"Retail":85,"Medical":85,"School/Church":85,"Other commercial":85},
+    auto:{"Locked out of car":85,"Lost all keys":120,"Key broke in ignition":150,"Need new fob":175,"Trunk locked":85,"Other":65},
+    safe:{"Home / gun safe":195,"Commercial safe":295,"TL / high security":395,"Antique / vintage":250,"Floor / wall safe":225,"Jewelry chest":195}
+  },
+  accent:'#58a6ff',accent2:'#f0883e',bg:'#0d1117',bgImg:'',logo:'',fontSize:'16px',pinHash:''
+};
+var settings = {};
+var drawerUnlocked = false;
+
+function loadSettings(){
+  try{var s=localStorage.getItem('servicepro_settings');settings=s?JSON.parse(s):JSON.parse(JSON.stringify(defaultSettings));}catch(e){settings=JSON.parse(JSON.stringify(defaultSettings));}
+  // Migrate old settings that lack services
+  if(!settings.services)settings.services=JSON.parse(JSON.stringify(defaultSettings.services));
+  if(!settings.pinHash){
+    document.getElementById('setupOverlay').classList.remove('hidden');
+    initSetupTabs();
+  } else {
+    document.getElementById('gearBtn').classList.add('show');
+  }
+  applySettings();
+}
+
+function savePricing(){settings.tripFee=parseFloat(document.getElementById("setTripFee").value)||0;settings.radius=parseFloat(document.getElementById("setRadius").value)||0;settings.mileageRate=parseFloat(document.getElementById("setMileRate").value)||0;saveSettings();}
+function saveSettings(){
+  localStorage.setItem('servicepro_settings',JSON.stringify(settings));
+  applySettings();
+}
+function applySettings(){
+  var s=settings;
+  document.querySelectorAll('.tab-bar .tab').forEach(function(t){var k=t.getAttribute('data-tab');if(!k)return;if(s.tabs[k])t.classList.remove('hidden');else{t.classList.add('hidden');t.classList.remove('active');}});
+  var vt=document.querySelectorAll('.tab-bar .tab:not(.hidden)');
+  if(vt.length>0){var ha=false;vt.forEach(function(t){if(t.classList.contains('active'))ha=true;});if(!ha){vt[0].classList.add('active');switchTab(vt[0].getAttribute('data-tab'));}}
+  for(var k in s.tabs){var p=document.getElementById('panel-'+k);if(p){p.style.display=s.tabs[k]?'':'none';if(s.tabs[k]&&document.querySelector('.tab-bar .tab[data-tab="'+k+'"].active'))p.classList.add('active');}}
+  var r=document.documentElement;r.style.setProperty('--accent',s.accent);r.style.setProperty('--accent2',s.accent2);r.style.setProperty('--bg',s.bg);
+  document.body.style.backgroundImage=s.bgImg?'url('+s.bgImg+')':'';document.body.style.backgroundSize=s.bgImg?'cover':'';document.body.style.backgroundAttachment=s.bgImg?'fixed':'';
+  var be=document.querySelector('.brand');
+  if(be){if(s.logo)be.innerHTML='<img src="'+s.logo+'" style="height:22px;vertical-align:middle"> <span>ServicePro</span>';else be.innerHTML='\uD83D\uDD27 <span>'+s.bizName+'</span>';}
+  document.body.style.fontSize=s.fontSize;
+  updateSettingsDrawer();
+}
+
+/* Setup wizard */
+var setupStep=0;
+function initSetupTabs(){
+  var s=settings,labels={resi:'Residential',comm:'Commercial',auto:'Automotive',safe:'Safe'};
+  var el=document.getElementById('setupTabs');if(!el)return;
+  el.innerHTML='';
+  for(var k in labels){
+    var btn=document.createElement('button');
+    btn.className='toggle-btn'+(s.tabs[k]?' active':' off');
+    btn.textContent=labels[k];
+    btn.onclick=function(ke,bt){return function(){settings.tabs[ke]=!settings.tabs[ke];bt.classList.toggle('active');bt.classList.toggle('off');saveSettings();};}(k,btn);
+    el.appendChild(btn);
+  }
+}
+
+function selectTrade(trade){
+  currentTrade=trade;
+  var btns=document.querySelectorAll('.trade-btn');
+  btns.forEach(function(b){b.classList.remove('active');});
+  var el=document.querySelector('.trade-btn[data-trade="'+trade+'"]');
+  if(el)el.classList.add('active');
+  var t=tradeFlows[trade];var tabBar=document.getElementById('tabBar');
+  tabBar.innerHTML='<div class="tab" onclick="openPinModal()" id="tabHome">\ud83c\udfe0</div>';
+  if(t&&t.subs){t.subs.forEach(function(s,i){
+    var tab=document.createElement('div');tab.className='tab'+(i===0?' active':'');
+    tab.textContent=s.label;tab.onclick=function(k){return function(){switchTab(k);startFlow(k);};}(s.key);
+    tab.setAttribute('data-tab',s.key);tab.id='tab-'+s.key;tabBar.appendChild(tab);
+  });}
+  currentSub=t&&t.subs?t.subs[0].key:'resi';switchTab(currentSub);startFlow(currentSub);
+}
+function setupNext(n){
+  try{
+    if(n===1){
+      // Welcome → PIN step: no save, just transition
+    }
+    if(n===2){
+      // When coming from PIN step: validate and save PIN
+      var pin=document.getElementById('setupPin').value.trim();
+      var pin2=document.getElementById('setupPinConfirm').value.trim();
+      if(pin.length<4||pin!==pin2){
+        document.getElementById('pinMatchErr').style.display='block';
+        return;
+      }
+      document.getElementById('pinMatchErr').style.display='none';
+      settings.pinHash=sha256(pin);
+      localStorage.setItem('servicepro_settings',JSON.stringify(settings));
+      // Also save biz name
+      var name=document.getElementById('setupBizName').value.trim();
+      if(name){settings.bizName=name;saveSettings();}
+    }
+    if(n===3||n===0){if(n===3)initSetupTabs();} // tabs refresh on step 3
+    if(n===4){
+      settings.accent=document.getElementById('setupAccent').value;
+      settings.accent2=document.getElementById('setupAccent2').value;
+      settings.bg=document.getElementById('setupBg').value;
+      saveSettings();
+    }
+    if(n===5){
+      settings.logo=document.getElementById('setupLogo').value.trim();
+      settings.bgImg=document.getElementById('setupBgImg').value.trim();
+      saveSettings();
+    }
+    if(n===6){
+      settings.phone=document.getElementById('setupPhone').value.trim();
+      settings.email=document.getElementById('setupEmail').value.trim();
+      settings.country=document.getElementById('setupCountry').value;
+      try{localStorage.setItem('servicepro_settings',JSON.stringify(settings));}catch(e){alert('Save failed: '+e.message);}
+      applySettings();
+    }
+    document.getElementById('setupStep'+setupStep).style.display='none';
+    setupStep=n;
+    document.getElementById('setupStep'+setupStep).style.display='block';
+  }catch(e){alert('Error: '+e.message);}
+}
+function setupPrev(n){
+  document.getElementById('setupStep'+setupStep).style.display='none';
+  setupStep=n;
+  document.getElementById('setupStep'+setupStep).style.display='block';
+}
+function skipSetup(){
+  settings.pinHash=sha256('0000');
+  localStorage.setItem('servicepro_settings',JSON.stringify(settings));
+  drawerUnlocked=true;
+  document.getElementById('setupOverlay').classList.add('hidden');
+  document.getElementById('gearBtn').classList.add('show');
+  applySettings();
+}
+function finishSetup(){
+  drawerUnlocked=true;
+  // Re-read all wizard fields to make sure nothing is lost
+  var ps=document.getElementById('setupPhone');
+  var em=document.getElementById('setupEmail');
+  if(ps&&ps.value.trim())settings.phone=ps.value.trim();
+  if(em&&em.value.trim())settings.email=em.value.trim();
+  var sc=document.getElementById('setupCountry');
+  if(sc)settings.country=sc.value;
+  var bn=document.getElementById('setupBizName');
+  if(bn&&bn.value.trim())settings.bizName=bn.value.trim();
+  saveSettings();
+  document.getElementById('setupOverlay').classList.add('hidden');
+  document.getElementById('gearBtn').classList.add('show');
+  selectTrade('locksmith');
+}
+
+/* Settings drawer - PIN + session flag */
+function openPinModal(){
+  document.getElementById('pinModal').classList.add('show');
+  document.getElementById('pinErr').style.display='none';
+  document.getElementById('pinInput').value='';
+  setTimeout(function(){document.getElementById('pinInput').focus();},100);
+}
+function closePinModal(){document.getElementById('pinModal').classList.remove('show');}
+function checkPin(){
+  var val=document.getElementById('pinInput').value.trim();
+  if(sha256(val)===settings.pinHash){
+    drawerUnlocked=true;
+    closePinModal();
+    document.getElementById('settingsOverlay').classList.add('show');
+    document.getElementById('settingsDrawer').classList.add('open');
+    updateSettingsDrawer();
+  } else {
+    document.getElementById('pinErr').style.display='block';
+    document.getElementById('pinInput').value='';
+    document.getElementById('pinInput').focus();
+  }
+}
+function closeSettings(){
+  document.getElementById('settingsOverlay').classList.remove('show');
+  document.getElementById('settingsDrawer').classList.remove('open');
+}
+function handleSettingsDone(){
+  var newPin=document.getElementById('setNewPin').value.trim();
+  var newPin2=document.getElementById('setNewPinConfirm').value.trim();
+  if(newPin&&newPin.length>=4&&newPin===newPin2){
+    settings.pinHash=sha256(newPin);
+    saveSettings();
+  }
+  closeSettings();
+}
+
+function updateSettingsDrawer(){
+  if(!document.getElementById('setBizName'))return;
+  var s=settings,labels={resi:'Residential',comm:'Commercial',auto:'Automotive',safe:'Safe'};
+  var el=document.getElementById('settingsTabs');if(!el)return;
+  el.innerHTML='';
+  for(var k in s.tabs){
+    var btn=document.createElement('button');
+    btn.className='toggle-btn'+(s.tabs[k]?' active':' off');
+    btn.textContent=labels[k];
+    btn.onclick=function(ke){return function(){s.tabs[ke]=!s.tabs[ke];saveSettings();updateSettingsDrawer();};}(k);
+    el.appendChild(btn);
+  }
+  document.getElementById('setBizName').value=s.bizName||'';
+  document.getElementById('setPhone').value=s.phone||'';
+  if(document.getElementById('setCountry'))document.getElementById('setCountry').value=s.country||'1';
+  document.getElementById('setEmail').value=s.email||'';
+  document.getElementById('setAccent').value=s.accent;
+  if(document.getElementById('setAccentTxt'))document.getElementById('setAccentTxt').value=s.accent;
+  document.getElementById('setAccent2').value=s.accent2;
+  if(document.getElementById('setAccent2Txt'))document.getElementById('setAccent2Txt').value=s.accent2;
+  document.getElementById('setBg').value=s.bg;
+  if(document.getElementById('setBgTxt'))document.getElementById('setBgTxt').value=s.bg;
+  document.getElementById('setBgImg').value=s.bgImg||'';
+  document.getElementById('setLogo').value=s.logo||'';
+  document.getElementById('setFontSize').value=s.fontSize;
+  if(document.getElementById('setTripFee'))document.getElementById('setTripFee').value=s.tripFee||0;
+  if(document.getElementById('setRadius'))document.getElementById('setRadius').value=s.radius||20;
+  if(document.getElementById('setMileRate'))document.getElementById('setMileRate').value=s.mileageRate||2;
+  // Populate pricing fields
+  if(document.getElementById('setTripFee')&&s.tripFee!==undefined){
+    document.getElementById('setTripFee').value=s.tripFee;
+    document.getElementById('setRadius').value=s.serviceRadius;
+    document.getElementById('setMileRate').value=s.mileageRate;
+  }
+
+  // Populate service checkboxes
+  var ss=document.getElementById('settingsServices');
+  if(ss&&s.services){
+    ss.innerHTML='';
+    var labels={resi:'Residential',comm:'Commercial',auto:'Automotive',safe:'Safe'};
+    for(var sk in labels){
+      if(!s.tabs[sk])continue;
+      var sv=s.services[sk]||[];
+      var div=document.createElement('div');
+      div.style.margin='6px 0';
+      var h=document.createElement('div');
+      h.style.cssText='font-size:12px;color:var(--accent2);margin-bottom:4px';
+      h.textContent=labels[sk];
+      div.appendChild(h);
+      var allOptions=[];
+      if(sk==='resi')allOptions=["Locked out","Need rekey","Lock repair","New install","Keys need duplication"];
+      else if(sk==='comm')allOptions=["Master key system","Rekey multiple doors","Panic hardware service","New door hardware install","Access control","Consultation"];
+      else if(sk==='auto')allOptions=["Locked out of car","Lost all keys","Key broke in ignition","Need new fob","Trunk locked","Other"];
+      else if(sk==='safe')allOptions=["Home / gun safe","Commercial safe","TL / high security","Antique / vintage","Floor / wall safe","Jewelry chest","Won't open","Dial spins freely","Digital keypad dead","Combo forgotten","Handle broken","Won't lock"];
+      for(var si=0;si<allOptions.length;si++){
+        var opt=allOptions[si];
+        var cb=document.createElement('div');
+        cb.style.cssText='display:inline-flex;align-items:center;gap:4px;margin:2px 6px 2px 0;font-size:12px;cursor:pointer';
+        var inp=document.createElement('input');
+        inp.type='checkbox';
+        inp.checked=sv.indexOf(opt)>-1;
+        inp.style.accentColor='var(--accent)';
+        inp.onchange=function(serviceKey,optionName,chk){return function(){
+          if(!s.services[serviceKey])s.services[serviceKey]=[];
+          var arr=s.services[serviceKey];
+          if(chk.checked){if(arr.indexOf(optionName)===-1)arr.push(optionName);}
+          else{var idx=arr.indexOf(optionName);if(idx>-1)arr.splice(idx,1);}
+          saveSettings();
+        };}(sk,opt,inp);
+        cb.appendChild(inp);
+        var txt=document.createElement('span');
+        txt.textContent=' '+opt;
+        txt.style.cssText='color:var(--text)';
+        cb.appendChild(txt);
+        var pi=document.createElement('input');
+        pi.type='number';pi.min='0';pi.step='5';pi.placeholder='$';
+        pi.style.cssText='width:48px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:2px 4px;font-size:11px;text-align:center';
+        if(s.prices&&s.prices[sk]&&s.prices[sk][opt])pi.value=s.prices[sk][opt];
+        pi.onchange=function(sk2,on2,el2){return function(){
+          if(!s.prices)s.prices={};
+          if(!s.prices[sk2])s.prices[sk2]={};
+          s.prices[sk2][on2]=parseFloat(el2.value)||0;
+          saveSettings();
+        };}(sk,opt,pi);
+        cb.appendChild(pi);
+        // removed - text now in span
+        div.appendChild(cb);
+      }
+      ss.appendChild(div);
+    }
+  }
+  document.getElementById('setNewPin').value='';
+  document.getElementById('setNewPinConfirm').value='';
+}
+document.addEventListener('input',function(e){
+  if(!drawerUnlocked)return;
+  var id=e.target.id;if(!id)return;var s=settings;
+  if(id==='setBizName'){s.bizName=e.target.value;saveSettings();}
+  if(id==='setPhone'){s.phone=e.target.value;saveSettings();}
+  if(id==='setCountry'){s.country=e.target.value;saveSettings();}
+  if(id==='setEmail'){s.email=e.target.value;saveSettings();}
+  if(id==='setAccent'||id==='setAccentTxt'){s.accent=e.target.value;if(id==='setAccentTxt')document.getElementById('setAccent').value=e.target.value;saveSettings();}
+  if(id==='setAccent2'||id==='setAccent2Txt'){s.accent2=e.target.value;if(id==='setAccent2Txt')document.getElementById('setAccent2').value=e.target.value;saveSettings();}
+  if(id==='setBg'||id==='setBgTxt'){s.bg=e.target.value;if(id==='setBgTxt')document.getElementById('setBg').value=e.target.value;saveSettings();}
+  if(id==='setBgImg'){s.bgImg=e.target.value;saveSettings();}
+  if(id==='setLogo'){s.logo=e.target.value;saveSettings();}
+  if(id==='setFontSize'){s.fontSize=e.target.value;saveSettings();}
+});
+function exportSettings(){
+  var blob=new Blob([JSON.stringify(settings,null,2)],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='lockcmd-settings.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function importSettings(e){
+  var file=e.target.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      var imported=JSON.parse(ev.target.result);
+      settings=imported;
+      saveSettings();
+      updateSettingsDrawer();
+    }catch(err){alert('Invalid settings file.');}
+  };
+  reader.readAsText(file);
+}
+function resetSettings(){
+  if(confirm('Reset all settings to default? This will clear your PIN and the gear will hide.')){
+    settings=JSON.parse(JSON.stringify(defaultSettings));
+    localStorage.setItem('servicepro_settings',JSON.stringify(settings));
+    drawerUnlocked=false;
+    document.getElementById('gearBtn').classList.remove('show');
+    document.getElementById('setupOverlay').classList.remove('hidden');
+    initSetupTabs();
+  }
+}
+function switchTab(id){
+  document.querySelectorAll('.tab-bar .tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  var tab=document.querySelector('.tab-bar .tab[data-tab="'+id+'"]');if(tab)tab.classList.add('active');
+  var panel=document.getElementById('panel-'+id)||document.getElementById('panel-main');if(panel)panel.classList.add('active');
+  history.replaceState(null,'','#'+id);
+  if(!state[id]||!state[id].started)startFlow(id);
+}
+var flows={
+  resi:{steps:[{q:"What's the situation?",opts:["Locked out","Need rekey","Lock repair","New install","Keys need duplication"],key:'situation'},{q:"What type of lock?",opts:["Deadbolt","Knob lock","Handle set","Smart lock","Not sure"],key:'lockType'},{q:"Is this urgent?",opts:["Yes - locked out now","Today","Can schedule"],key:'urgency'},{q:"Your name?",input:true,key:'name',placeholder:'John Smith'},{q:"Your phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'},{q:"Service address?",input:true,key:'address',placeholder:'123 Main St, City, State'}],build:function(a){var u=a.urgency==="Yes - locked out now"?"EMERGENCY":a.urgency==="Today"?"Today":"Scheduled";return "RESIDENTIAL LOCKSMITH REQUEST\n\nClient: "+a.name+"\nPhone: "+a.phone+"\nAddress: "+a.address+"\nSituation: "+a.situation+"\nLock type: "+a.lockType+"\nUrgency: "+u+"\n\nPlease contact me to confirm."}},
+  comm:{steps:[{q:"What type of business?",opts:["Office","Warehouse","Retail","Medical","School/Church","Other commercial"],key:'bizType'},{q:"What's needed?",opts:["Master key system","Rekey multiple doors","Panic hardware service","New door hardware install","Access control","Consultation"],key:'service'},{q:"Approx number of doors?",opts:["1-5","6-15","16-30","30+"],key:'doors'},{q:"Your name / company?",input:true,key:'name',placeholder:'Company name'},{q:"Best phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'},{q:"Business address?",input:true,key:'address',placeholder:'456 Business Ave'}],build:function(a){return "COMMERCIAL SERVICE REQUEST\n\nCompany: "+a.name+"\nPhone: "+a.phone+"\nAddress: "+a.address+"\nBusiness type: "+a.bizType+"\nService: "+a.service+"\nDoors: "+a.doors+"\n\nPlease contact me to schedule a walkthrough."}},
+  auto:{steps:[{q:"What's the situation?",opts:["Locked out of car","Lost all keys","Key broke in ignition","Need new fob","Trunk locked","Other"],key:'situation'},{q:"Vehicle year?",input:true,key:'year',placeholder:'2020'},{q:"Vehicle make & model?",input:true,key:'make',placeholder:'Toyota Camry'},{q:"Where's the vehicle?",opts:["At home","Parking lot","Store parking","Street side","Other location"],key:'location'},{q:"Your name?",input:true,key:'name',placeholder:'John Smith'},{q:"Your phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'}],build:function(a){return "AUTOMOTIVE SERVICE REQUEST\n\nClient: "+a.name+"\nPhone: "+a.phone+"\nVehicle: "+a.year+" "+a.make+"\nSituation: "+a.situation+"\nLocation: "+a.location+"\n\nPlease contact me."}},
+  safe:{steps:[{q:"What kind of safe?",opts:["Home / gun safe","Commercial safe","TL / high security","Antique / vintage","Floor / wall safe","Jewelry chest"],key:'type'},{q:"What's the issue?",opts:["Won't open / locked out","Dial spins freely","Digital keypad dead","Combo forgotten","Handle broken","Won't lock"],key:'issue'},{q:"Brand (if known)?",input:true,key:'brand',placeholder:'AMSEC, Gardall, Liberty, etc.'},{q:"Approx age?",opts:["New (0-5 yrs)","Modern (5-20)","Vintage (20-50)","Antique (50+)","Unknown"],key:'age'},{q:"Your name?",input:true,key:'name',placeholder:'John Smith'},{q:"Your phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'}],build:function(a){return "SAFE SERVICE REQUEST\n\nClient: "+a.name+"\nPhone: "+a.phone+"\nSafe type: "+a.type+"\nBrand: "+a.brand+"\nAge: "+a.age+"\nIssue: "+a.issue+"\n\nPlease contact me."}}
+};
+var trades = {
+  locksmith:{icon:"\ud83d\udd10",subs:[{key:"resi",label:"Residential"},{key:"comm",label:"Commercial"},{key:"auto",label:"Automotive"},{key:"safe",label:"Safe"}]},
+  plumbing:{icon:"\ud83d\udd27",subs:[]}, hvac:{icon:"\ud83c\udf21",subs:[]}, towing:{icon:"\ud83d\udece",subs:[]},
+  electric:{icon:"\u26a1",subs:[]}, pest:{icon:"\ud83d\udc1c",subs:[]}, garage:{icon:"\ud83d\udeaa",subs:[]},
+  tree:{icon:"\ud83c\udf33",subs:[]}, pool:{icon:"\ud83c\udfca",subs:[]}
+};
+var currentTrade="locksmith";var currentSub="resi";var tradeFlows={};
+for(var tk in trades){tradeFlows[tk]={flows:{},subs:trades[tk].subs};}
+lt=trades.locksmith;lt.subs.forEach(function(s){tradeFlows.locksmith.flows[s.key]=flows[s.key];});
+
+var state={};
+function startFlow(key){state[key]={answers:{},step:0,started:true};renderStep(key);}
+function renderStep(key){
+  var f=flows[key],s=state[key],step=f.steps[s.step],total=f.steps.length;
+  var dh='';for(var i=0;i<total;i++){var c=i===s.step?'active':i<s.step?'done':'';dh+='<span class="'+c+'"></span>';}
+  var dEl=document.getElementById(key+'Dots')||document.getElementById('mainDots');if(dEl)dEl.innerHTML=dh;
+  var sEl=document.getElementById(key+'StepLabel')||document.getElementById('mainStepLabel');if(sEl)sEl.textContent='Step '+(s.step+1)+' of '+total;
+  var qEl=document.getElementById(key+'Q')||document.getElementById('mainQ');if(qEl)qEl.textContent=step.q;
+  var oe=document.getElementById(key+'Opts')||document.getElementById('mainOpts');var ie=document.getElementById(key+'Input')||document.getElementById('mainInput');var ne=document.getElementById(key+'Nav')||document.getElementById('mainNav');
+  if(step.opts){
+    oe.style.display='flex';ie.style.display='none';
+    // Filter options by locksmith's selected services (first step of each flow)
+    var validOpts=step.opts;
+    if(s.step===0&&settings.services&&settings.services[key]){
+      var svc=settings.services[key];
+      if(svc&&svc.length>0)validOpts=step.opts.filter(function(o){return svc.indexOf(o)>-1;});
+    }
+    oe.innerHTML=validOpts.map(function(o){return '<div class="flow-btn" onclick="answer(\''+key+'\',\''+o.replace(/'/g,"\\'")+'\')"><span class="icon">→</span> '+o+'</div>';}).join('');
+  }else if(step.input){
+    oe.style.display='none';ie.style.display='block';
+    var ph=step.placeholder||'',val=s.answers[step.key]||'';
+    ie.innerHTML='<input type="text" id="'+key+'InputField" placeholder="'+ph+'" value="'+val+'" onkeydown="if(event.key==\'Enter\')answerInput(\''+key+'\')">';
+    setTimeout(function(){var el=document.getElementById(key+'InputField');if(el)el.focus();},50);
+  }
+  if(step.opts){ne.innerHTML='';}else{var bb=s.step>0?'<button onclick="back(\''+key+'\')">← Back</button>':'';ne.innerHTML=bb+'<button class="primary" onclick="answerInput(\''+key+'\')">Continue →</button>';}
+  var rEl=document.getElementById(key+'Result')||document.getElementById('mainResult');if(rEl)rEl.classList.remove('show');
+}
+function answer(key,val){var f=flows[key],s=state[key],step=f.steps[s.step];s.answers[step.key]=val;s.step++;if(s.step>=f.steps.length)showResult(key);else renderStep(key);}
+function answerInput(key){var f=flows[key],s=state[key],step=f.steps[s.step];var val=document.getElementById(key+'InputField').value.trim();if(!val)return;s.answers[step.key]=val;s.step++;if(s.step>=f.steps.length)showResult(key);else renderStep(key);}
+function back(key){var s=state[key];if(s.step>0){s.step--;renderStep(key);}}
+function showResult(key){
+  var f=flows[key],s=state[key],msg=f.build(s.answers),el=document.getElementById(key+'Result')||document.getElementById('mainResult'),subj="ServicePro: "+key.toUpperCase()+" Service Request";
+  var phone=settings.phone||'';var country=settings.country||'1';var fullPhone='+'+country+phone.replace(/[^\d]/g,'');var email=settings.email||'';
+  var tripFee=settings.tripFee||0;var total=tripFee;
+  var est='<div style="background:var(--surface);border-radius:8px;padding:14px;margin:12px 0;text-align:left"><h3 style="color:var(--accent);margin-bottom:8px">\ud83d\udccb Service Estimate</h3><div style="font-size:13px;line-height:1.8">'+msg.replace(/\n/g,'<br>')+'</div>';
+  if(total>0){est+='<hr style="border:none;border-top:1px solid var(--border);margin:12px 0"><table style="width:100%;font-size:13px"><tr><td>Trip fee:</td><td style="text-align:right;font-weight:600">$'+tripFee.toFixed(2)+'</td></tr><tr style="border-top:1px solid var(--border)"><td style="padding-top:6px;font-weight:700">Est. Total:</td><td style="text-align:right;padding-top:6px;font-weight:700;color:var(--accent)">$'+total.toFixed(2)+'</td></tr></table><p style="color:var(--muted);font-size:11px;margin-top:8px">* Final price may vary. Technician confirms on call.</p>';}
+  est+='</div><div style="margin:16px 0"><button onclick="confirmSend(\''+key+'\',\''+fullPhone+'\',\''+email+'\')" style="width:100%;background:var(--accent);color:var(--bg);border:none;padding:14px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer">\u2705 Confirm & Send Request</button></div>';
+  est+='<button class="reset-btn" onclick="startFlow(\''+key+'\')">Start Over</button>';
+  el.innerHTML=est;el.classList.add('show');
+  var oE=document.getElementById(key+'Opts')||document.getElementById('mainOpts');if(oE)oE.style.display='none';
+  var iE=document.getElementById(key+'Input')||document.getElementById('mainInput');if(iE)iE.style.display='none';
+  var nE=document.getElementById(key+'Nav')||document.getElementById('mainNav');if(nE)nE.innerHTML='';
+}
+function confirmSend(key,fullPhone,email){
+  var f=flows[key],s=state[key],msg=f.build(s.answers),subj="ServicePro: "+key.toUpperCase()+" Service Request";
+  if(fullPhone){window.open('sms:'+fullPhone+'?body='+encodeURIComponent(msg),'_blank');}
+  if(email){window.open('mailto:'+email+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(msg),'_blank');}
+  var cbEl=document.getElementById(key+'Result')||document.getElementById('mainResult');
+  if(cbEl){cbEl.innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:48px;margin-bottom:10px">\ud83d\udcde</div><h3 style="color:var(--green);margin-bottom:8px">Request Sent!</h3><p style="color:var(--muted);font-size:14px;line-height:1.5">Your service request has been sent. The technician will call you back as soon as possible to confirm the appointment and finalize pricing.</p><p style="color:var(--text);font-size:13px;margin-top:12px">Please keep your phone nearby.</p><button class="reset-btn" onclick="startFlow(\''+key+'\')" style="margin-top:16px">Submit Another Request</button></div>';}
+}
+
+function copyMsg(key){
+  var msg=flows[key].build(state[key].answers);
+  if(navigator.clipboard){navigator.clipboard.writeText(msg).then(function(){alert('Message copied to clipboard!');}).catch(function(){prompt('Copy this message:',msg);});}else{prompt('Copy this message:',msg);}
+}
+loadSettings();
+var h=location.hash.replace('#','');
+if(h&&document.getElementById('panel-'+h)){switchTab(h);}else{selectTrade('locksmith');}
+</script>
+</body>
+<!-- ServicePro v5 -->
+<!-- v5.3b -->
+</html>
