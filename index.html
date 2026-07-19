@@ -633,7 +633,7 @@ function updateSettingsDrawer(){
           if(!s.prices[sk])s.prices[sk]={};
           s.prices[sk][on]=parseFloat(el.value)||0;
           saveSettings();
-        };}(serviceKey,optionName,pi);
+        };}(sk,opt,pi);
         cb.appendChild(pi);
         cb.appendChild(document.createTextNode(' '+opt));
         div.appendChild(cb);
