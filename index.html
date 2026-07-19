@@ -743,8 +743,10 @@ function showResult(key){
   var tripFee=settings.tripFee||0;var total=tripFee;
   var est='<div style="background:var(--surface);border-radius:8px;padding:14px;margin:12px 0;text-align:left"><h3 style="color:var(--accent);margin-bottom:8px">\ud83d\udccb Service Estimate</h3><div style="font-size:13px;line-height:1.8">'+msg.replace(/\n/g,'<br>')+'</div>';
   if(total>0){est+='<hr style="border:none;border-top:1px solid var(--border);margin:12px 0"><table style="width:100%;font-size:13px"><tr><td>Trip fee:</td><td style="text-align:right;font-weight:600">$'+tripFee.toFixed(2)+'</td></tr><tr style="border-top:1px solid var(--border)"><td style="padding-top:6px;font-weight:700">Est. Total:</td><td style="text-align:right;padding-top:6px;font-weight:700;color:var(--accent)">$'+total.toFixed(2)+'</td></tr></table><p style="color:var(--muted);font-size:11px;margin-top:8px">* Final price may vary. Technician confirms on call.</p>';}
-  est+='</div><div style="margin:16px 0"><button onclick="confirmSend(\''+key+'\',\''+fullPhone+'\',\''+email+'\')" style="width:100%;background:var(--accent);color:var(--bg);border:none;padding:14px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer">\u2705 Confirm & Send Request</button></div>';
-  est+='<button class="reset-btn" onclick="startFlow(\''+key+'\')">Start Over</button>';
+  est+='</div><div style="margin:12px 0;display:flex;flex-direction:column;gap:8px">';
+  if(fullPhone){est+='<button onclick="confirmSend(\''+key+'\',\''+fullPhone+'\',\'\')" style="width:100%;background:var(--accent);color:var(--bg);border:none;padding:14px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer">\ud83d\udcf1 Send as Text</button>';}
+  if(email){est+='<button onclick="confirmSend(\''+key+'\',\'\',\''+email+'\')" style="width:100%;background:var(--bg2);color:var(--text);border:1px solid var(--border);padding:14px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer">\ud83d\udce7 Send as Email</button>';}
+  est+='</div><button class="reset-btn" onclick="startFlow(\''+key+'\')">Start Over</button>';
   el.innerHTML=est;el.classList.add('show');
   var oE=document.getElementById(key+'Opts')||document.getElementById('mainOpts');if(oE)oE.style.display='none';
   var iE=document.getElementById(key+'Input')||document.getElementById('mainInput');if(iE)iE.style.display='none';
@@ -755,7 +757,7 @@ function confirmSend(key,fullPhone,email){
   var cbEl=document.getElementById(key+'Result')||document.getElementById('mainResult');
   if(cbEl){cbEl.innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:48px;margin-bottom:10px">\u{1f4de}</div><h3 style="color:var(--green);margin-bottom:8px">Request Sent!</h3><p style="color:var(--muted);font-size:14px;line-height:1.5">Your service request has been sent. The technician will call you back as soon as possible to confirm the appointment and finalize pricing.</p><p style="color:var(--text);font-size:13px;margin-top:12px">Please keep your phone nearby.</p><button class="reset-btn" onclick="startFlow(\''+key+'\')" style="margin-top:16px">Submit Another Request</button></div>';}
   if(fullPhone){window.location.href='sms:'+fullPhone+'?body='+encodeURIComponent(msg);}
-  else if(email){window.open('mailto:'+email+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(msg),'_blank');}
+  if(email){window.open('mailto:'+email+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(msg),'_blank');}
 }
 
 function copyMsg(key){
