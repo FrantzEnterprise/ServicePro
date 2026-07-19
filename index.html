@@ -94,7 +94,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 /* Settings drawer */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none}
 .overlay.show{display:block}
-.drawer{position:fixed;top:0;right:-400px;width:380px;max-width:90vw;height:100vh;background:var(--bg2);border-left:1px solid var(--border);z-index:201;transition:right .3s;overflow-y:auto;padding:20px}
+.drawer{position:fixed;top:0;right:-400px;width:380px;max-width:90vw;height:100%;min-height:100vh;background:var(--bg2);border-left:1px solid var(--border);z-index:201;transition:right .3s;display:flex;flex-direction:column}.drawer.open{right:0}.drawer-header{padding:20px 20px 0}.drawer-body{flex:1;overflow-y:auto;padding:0 20px 20px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
 .drawer.open{right:0}
 .drawer h2{font-size:17px;color:var(--accent);margin-bottom:16px}
 .drawer label{display:block;color:var(--muted);font-size:12px;margin-top:10px;margin-bottom:3px}
@@ -291,8 +291,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 <!-- ====== SETTINGS DRAWER ====== -->
 <div class="overlay" id="settingsOverlay" onclick="closeSettings()"></div>
 <div class="drawer" id="settingsDrawer">
+<div class="drawer-header">
 <button class="close" onclick="closeSettings()">✕</button>
 <h2>⚙️ Settings</h2>
+</div>
+<div class="drawer-body">
 <p style="color:var(--muted);font-size:12px;margin-bottom:10px">ServicePro configuration — changes save automatically.</p>
 <div class="section-title">🔘 Show / Hide Tabs</div>
 <div class="toggle-group" id="settingsTabs"></div>
@@ -333,6 +336,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   <button onclick="document.getElementById('importFile').click()" style="background:var(--surface);color:var(--text);border:1px solid var(--border);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px">📂 Import</button>
   <button onclick="resetSettings()" style="background:var(--surface);color:#f85149;border:1px solid var(--border);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px">🔄 Reset All</button>
   <input type="file" id="importFile" accept=".json" style="display:none" onchange="importSettings(event)">
+</div>
 </div>
 <button class="save-btn" onclick="handleSettingsDone()">✅ Done</button>
 </div>
