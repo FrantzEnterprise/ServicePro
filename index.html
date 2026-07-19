@@ -600,8 +600,8 @@ function updateSettingsDrawer(){
       else if(sk==='safe')allOptions=["Home / gun safe","Commercial safe","TL / high security","Antique / vintage","Floor / wall safe","Jewelry chest","Won't open","Dial spins freely","Digital keypad dead","Combo forgotten","Handle broken","Won't lock"];
       for(var si=0;si<allOptions.length;si++){
         var opt=allOptions[si];
-        var cb=document.createElement('label');
-        cb.style.cssText='display:inline-flex;align-items:center;gap:4px;margin:2px 6px 2px 0;font-size:12px;color:var(--text);cursor:pointer';
+        var cb=document.createElement('div');
+        cb.style.cssText='display:inline-flex;align-items:center;gap:4px;margin:2px 6px 2px 0;font-size:12px;cursor:pointer';
         var inp=document.createElement('input');
         inp.type='checkbox';
         inp.checked=sv.indexOf(opt)>-1;
@@ -614,6 +614,10 @@ function updateSettingsDrawer(){
           saveSettings();
         };}(sk,opt,inp);
         cb.appendChild(inp);
+        var txt=document.createElement('span');
+        txt.textContent=' '+opt;
+        txt.style.cssText='color:var(--text)';
+        cb.appendChild(txt);
         var pi=document.createElement('input');
         pi.type='number';pi.min='0';pi.step='5';pi.placeholder='$';
         pi.style.cssText='width:48px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:2px 4px;font-size:11px;text-align:center';
@@ -625,7 +629,7 @@ function updateSettingsDrawer(){
           saveSettings();
         };}(serviceKey,optionName,pi);
         cb.appendChild(pi);
-        cb.appendChild(document.createTextNode(' '+opt));
+        // removed - text now in span
         div.appendChild(cb);
       }
       ss.appendChild(div);
