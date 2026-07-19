@@ -622,12 +622,12 @@ function updateSettingsDrawer(){
         pi.type='number';pi.min='0';pi.step='5';pi.placeholder='$';
         pi.style.cssText='width:48px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:2px 4px;font-size:11px;text-align:center';
         if(s.prices&&s.prices[sk]&&s.prices[sk][opt])pi.value=s.prices[sk][opt];
-        pi.onchange=function(sk,on,el){return function(){
+        pi.onchange=function(sk2,on2,el2){return function(){
           if(!s.prices)s.prices={};
-          if(!s.prices[sk])s.prices[sk]={};
-          s.prices[sk][on]=parseFloat(el.value)||0;
+          if(!s.prices[sk2])s.prices[sk2]={};
+          s.prices[sk2][on2]=parseFloat(el2.value)||0;
           saveSettings();
-        };}(serviceKey,optionName,pi);
+        };}(sk,opt,pi);
         cb.appendChild(pi);
         // removed - text now in span
         div.appendChild(cb);
