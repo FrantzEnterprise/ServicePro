@@ -1,23 +1,26 @@
-# LockPro — Full Platform Plan
+# ServicePro — Solo Pro Platform for Tradespeople
 
 ## Philosophy
-The tech calls the customer back personally. That call is the sale.
-The system handles everything up to and after that call — so the tech can focus on the human connection.
+The pro calls the customer back personally. That call is the sale.
+The system handles everything up to and after that call — so the pro can focus on the human connection.
+
+Supports: Locksmith, Plumbing, HVAC, Towing, Electrical, Pest Control, Garage Door, Tree Service, Pool Service, and more.
 
 ## Architecture
 
 ### Frontend (static, GitHub Pages)
 ```
-lockpro.frantzenterprise.github.io/
-├── index.html              ← Customer intake (LockCMD evolved)
-│   └── Flow: Welcome → Select issue → Get estimate → Confirm & Send
+servicepro.frantzenterprise.github.io/
+├── index.html              ← Customer intake (evolved LockCMD)
+│   └── Flow: Welcome → Select trade → Describe issue → Get estimate → Confirm & Send
 ├── success.html            ← "We'll call you back ASAP"
 ├── /tech/
 │   ├── dashboard.html      ← Incoming leads, quick actions
 │   ├── leads.html          ← History of all jobs
 │   └── settings.html       ← Full business config
+│       ├── Trade selection (which industry)
 │       ├── Branding (colors, logo, bg)
-│       ├️⃣ Services (per-tab, toggle on/off, custom)
+│       ├── Services (per-trade, toggle on/off, custom)
 │       ├── Pricing (trip fee, radius, mileage rate, per-service)
 │       └── Payments (Stripe keys, Venmo handle, Zelle email)
 ├── /api/
@@ -39,11 +42,11 @@ Customer → index.html (fills form + gets estimate)
 
 ### Tech Settings (persisted in localStorage initially, server later)
 - bizName, phone, email, country
+- Trade type / industry
 - accent/accent2/bg colors, logo URL, bg image URL
-- tabs shown (resi/comm/auto/safe)
-- services per tab (which ones, plus custom)
+- services (per-trade, which ones, plus custom)
 - tripFee, serviceRadius, mileageRate
-- prices per service per tab
+- prices per service
 - Stripe publishable key, Venmo handle, Zelle email
 - SMS/email notification preferences
 
@@ -56,17 +59,17 @@ Customer → index.html (fills form + gets estimate)
 
 ## Build Phases
 
-### Phase 1: Customer Intake + Pricing Engine (NOW)
-- LockCMD customer flow working
+### Phase 1: Customer Intake + Pricing Engine (CURRENT)
+- Customer flow: Welcome → Trade → Issue → Estimate → Confirm & Send
 - Settings drawer with branding, services, pricing
-- Confirm & Send (SMS/email) with callback promise
-- **Deliverable:** Live at frantzenterprise.github.io/LockCMD/
+- LockCMD is the locksmith prototype
+- **Deliverable:** Working intake for all 9 trades
 
 ### Phase 2: Tech Dashboard + Lead Management
-- Customer submissions saved (localStorage initially)
+- Customer submissions saved (localStorage → server)
 - Dashboard shows incoming leads with details
 - Mark as "contacted", "appointment set", "completed", "paid"
-- Basic lead history
+- Lead history
 
 ### Phase 3: Payment Integration
 - Settings page for Stripe/Venmo/Zelle config
@@ -89,6 +92,8 @@ Customer → index.html (fills form + gets estimate)
 ## Key Design Decisions
 - **No auto-booking** — tech calls customer back (that's the sale)
 - **Single-page customer flow** — simple, fast, no navigation
+- **Trade selector first** — customer picks their need, system routes to correct flow
 - **Settings in drawer** — quick access for tech
-- **Pricing inline with services** — Robert's preference
+- **Pricing inline with services**
 - **Stripe Payment Links** — no PCI compliance needed client-side
+- **Trade-agnostic** — one codebase, multiple industries
