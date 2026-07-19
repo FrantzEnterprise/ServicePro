@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,user-scalable=yes">
-<title>ServicePro — Locksmith Command Center</title>
+<title>ServicePro — Get Your Service Estimate</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0d1117;--bg2:#161b22;--surface:#21262d;--surface2:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--accent2:#f0883e;--green:#3fb950;--orange:#d29922;--border:#30363d;--radius:12px;--font:'Inter','Segoe UI',system-ui,sans-serif}
@@ -49,6 +49,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .flow-step-dots span.active{background:var(--accent)}
 .flow-step-dots span.done{background:var(--green)}
 
+/* Trade selector */
+.trade-selector{background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;padding:10px 16px}
+.trade-options{display:flex;gap:6px;flex-wrap:nowrap}
+.trade-btn{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-size:13px;white-space:nowrap;transition:.15s;flex-shrink:0}
+.trade-btn:hover{background:var(--surface2);color:var(--text)}
+.trade-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 /* Setup wizard */
 .setup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px}
 .setup-overlay.hidden{display:none}
@@ -140,8 +146,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
     <div class="trade-btn" data-trade="pool" onclick="selectTrade('pool')">🏊 Pool Service</div>
   </div>
 </div>
+
+
 <div class="tab-bar" id="tabBar">
-  <div class="tab" onclick="openPinModal()" id="tabHome">🏠</div>
+  <div class="tab active" onclick="switchTab('resi')" data-tab="resi">🏠 Residential</div>
+  <div class="tab" onclick="switchTab('comm')" data-tab="comm">🏢 Commercial</div>
+  <div class="tab" onclick="switchTab('auto')" data-tab="auto">🚗 Automotive</div>
+  <div class="tab" onclick="switchTab('safe')" data-tab="safe">🔒 Safe</div>
 </div>
 
 <div class="panel active" id="panel-main"><div class="wrap"><div class="flow-card" id="mainFlow">
@@ -175,7 +186,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
     <div class="welcome">
       <div class="big-icon">🔧</div>
       <h2>Welcome to ServicePro</h2>
-      <p>One-time setup to configure ServicePro for your locksmith business. This takes about 2 minutes.</p>
+      <p>One-time setup to configure ServicePro for your business. This takes about 2 minutes.</p>
       <button class="nav-btn" onclick="setupNext(1)">Get Started →</button>
       <button class="nav-btn secondary" onclick="skipSetup()">Skip — use defaults</button>
       <div class="setup-help">Need help? <a href="help.html" target="_blank">View Setup Guide</a></div>
@@ -303,6 +314,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 <label>Font size</label>
 <select id="setFontSize"><option value="14px">Small</option><option value="16px" selected>Default</option><option value="18px">Large</option></select>
 <div class="section-title">💰 Pricing</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px">
+  <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text)">Trip fee $ <input type="number" id="setTripFee" placeholder="65" min="0" step="5" style="width:70px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:12px" onchange="savePricing()"></label>
+  <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text)">Radius (mi) <input type="number" id="setRadius" placeholder="20" min="0" step="5" style="width:60px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:12px" onchange="savePricing()"></label>
+  <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text)">$/mi beyond <input type="number" id="setMileRate" placeholder="2" min="0" step="0.5" style="width:60px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-size:12px" onchange="savePricing()"></label>
+</div>
+<p style="color:var(--muted);font-size:11px;margin:0 0 6px">Trip fee added for addresses within radius. Mileage applies beyond radius.</p>
+<div class="section-title">💰 Pricing</div>
 <label>Trip fee</label>
 <div style="display:flex;gap:6px;align-items:center">
   <span style="color:var(--muted);font-size:13px">$</span>
@@ -316,7 +334,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   <input type="number" id="setMileageRate" min="0" step="1" value="2" style="width:100px">
 </div>
 <div class="section-title">🔧 Services You Offer</div>
-<p style="color:var(--muted);font-size:11px;margin-bottom:6px">Check the services you provide. Clients only see what you offer. Set the price next to each service.</p>
+<p style="color:var(--muted);font-size:11px;margin-bottom:6px">Check the services you provide. Set the price next to each service.</p>
 <div id="settingsServices"></div>
 <div class="section-title">🔒 Change PIN</div>
 <label>New PIN (4-6 digits — leave blank to keep current)</label>
@@ -353,6 +371,13 @@ var defaultSettings = {
     auto:["Locked out of car","Lost all keys","Key broke in ignition","Need new fob","Trunk locked","Other"],
     safe:["Home / gun safe","Commercial safe","TL / high security","Antique / vintage","Floor / wall safe","Jewelry chest"]
   },
+  tripFee:65,serviceRadius:20,mileageRate:2,
+  prices:{
+    resi:{"Locked out":85,"Need rekey":45,"Lock repair":65,"New install":95,"Keys need duplication":15},
+    comm:{"Office":75,"Warehouse":95,"Retail":85,"Medical":85,"School/Church":85,"Other commercial":85},
+    auto:{"Locked out of car":85,"Lost all keys":120,"Key broke in ignition":150,"Need new fob":175,"Trunk locked":85,"Other":65},
+    safe:{"Home / gun safe":195,"Commercial safe":295,"TL / high security":395,"Antique / vintage":250,"Floor / wall safe":225,"Jewelry chest":195}
+  },
   accent:'#58a6ff',accent2:'#f0883e',bg:'#0d1117',bgImg:'',logo:'',fontSize:'16px',pinHash:''
 };
 var settings = {};
@@ -375,13 +400,19 @@ function saveSettings(){
   localStorage.setItem('servicepro_settings',JSON.stringify(settings));
   applySettings();
 }
+function savePricing(){
+  settings.tripFee=parseFloat(document.getElementById('setTripFee').value)||0;
+  settings.serviceRadius=parseFloat(document.getElementById('setRadius').value)||0;
+  settings.mileageRate=parseFloat(document.getElementById('setMileRate').value)||0;
+  saveSettings();
+}
 
 function applySettings(){
   var s=settings;
-  document.querySelectorAll('.tab-bar .tab').forEach(function(t){var k=t.getAttribute('data-tab');if(s.tabs[k])t.classList.remove('hidden');else{t.classList.add('hidden');t.classList.remove('active');}});
+  document.querySelectorAll('.tab-bar .tab').forEach(function(t){var k=t.getAttribute('data-tab');if(!k){t.classList.remove('hidden');return;}if(s.tabs[k])t.classList.remove('hidden');else{t.classList.add('hidden');t.classList.remove('active');}});
   var vt=document.querySelectorAll('.tab-bar .tab:not(.hidden)');
   if(vt.length>0){var ha=false;vt.forEach(function(t){if(t.classList.contains('active'))ha=true;});if(!ha){vt[0].classList.add('active');switchTab(vt[0].getAttribute('data-tab'));}}
-  // Panel visibility handled by panels system
+  for(var k in s.tabs){var p=document.getElementById('panel-'+k);if(p){p.style.display=s.tabs[k]?'':'none';if(s.tabs[k]&&document.querySelector('.tab-bar .tab[data-tab="'+k+'"].active'))p.classList.add('active');}}
   var r=document.documentElement;r.style.setProperty('--accent',s.accent);r.style.setProperty('--accent2',s.accent2);r.style.setProperty('--bg',s.bg);
   document.body.style.backgroundImage=s.bgImg?'url('+s.bgImg+')':'';document.body.style.backgroundSize=s.bgImg?'cover':'';document.body.style.backgroundAttachment=s.bgImg?'fixed':'';
   var be=document.querySelector('.brand');
@@ -390,6 +421,12 @@ function applySettings(){
   updateSettingsDrawer();
 }
 
+/* Trade selector */
+.trade-selector{background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;padding:10px 16px}
+.trade-options{display:flex;gap:6px;flex-wrap:nowrap}
+.trade-btn{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-size:13px;white-space:nowrap;transition:.15s;flex-shrink:0}
+.trade-btn:hover{background:var(--surface2);color:var(--text)}
+.trade-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 /* Setup wizard */
 var setupStep=0;
 function initSetupTabs(){
@@ -405,6 +442,7 @@ function initSetupTabs(){
   }
 }
 
+
 function selectTrade(trade){
   currentTrade=trade;
   var btns=document.querySelectorAll('.trade-btn');
@@ -413,15 +451,15 @@ function selectTrade(trade){
   if(el)el.classList.add('active');
   var t=tradeFlows[trade];
   var tabBar=document.getElementById('tabBar');
-  tabBar.innerHTML='<div class="tab" onclick="openPinModal()" id="tabHome">🏠</div>';
+  tabBar.innerHTML='<div class="tab" onclick="openPinModal()" id="tabHome">\ud83c\udfe0</div>';
   if(t&&t.subs){
     t.subs.forEach(function(s,i){
       var tab=document.createElement('div');
       tab.className='tab'+(i===0?' active':'');
       tab.textContent=s.label;
       tab.onclick=function(k){return function(){switchTab(k);startFlow(k);};}(s.key);
-      tab.id='tab-'+s.key;
       tab.setAttribute('data-tab',s.key);
+      tab.id='tab-'+s.key;
       tabBar.appendChild(tab);
     });
   }
@@ -568,6 +606,12 @@ function updateSettingsDrawer(){
   document.getElementById('setTripFee').value=s.tripFee||0;
   document.getElementById('setRadius').value=s.radius||20;
   document.getElementById('setMileageRate').value=s.mileageRate||2;
+  // Populate pricing fields
+  if(document.getElementById('setTripFee')&&s.tripFee!==undefined){
+    document.getElementById('setTripFee').value=s.tripFee;
+    document.getElementById('setRadius').value=s.serviceRadius;
+    document.getElementById('setMileRate').value=s.mileageRate;
+  }
 
   // Populate service checkboxes
   var ss=document.getElementById('settingsServices');
@@ -604,7 +648,18 @@ function updateSettingsDrawer(){
           saveSettings();
         };}(sk,opt,inp);
         cb.appendChild(inp);
-        cb.appendChild(document.createTextNode(opt));
+        var pi=document.createElement('input');
+        pi.type='number';pi.min='0';pi.step='5';pi.placeholder='$';
+        pi.style.cssText='width:48px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:2px 4px;font-size:11px;text-align:center';
+        if(s.prices&&s.prices[serviceKey]&&s.prices[serviceKey][optionName])pi.value=s.prices[serviceKey][optionName];
+        pi.onchange=function(sk,on,el){return function(){
+          if(!s.prices)s.prices={};
+          if(!s.prices[sk])s.prices[sk]={};
+          s.prices[sk][on]=parseFloat(el.value)||0;
+          saveSettings();
+        };}(serviceKey,optionName,pi);
+        cb.appendChild(pi);
+        cb.appendChild(document.createTextNode(' '+opt));
         div.appendChild(cb);
       }
       ss.appendChild(div);
@@ -675,9 +730,8 @@ var flows={
   auto:{steps:[{q:"What's the situation?",opts:["Locked out of car","Lost all keys","Key broke in ignition","Need new fob","Trunk locked","Other"],key:'situation'},{q:"Vehicle year?",input:true,key:'year',placeholder:'2020'},{q:"Vehicle make & model?",input:true,key:'make',placeholder:'Toyota Camry'},{q:"Where's the vehicle?",opts:["At home","Parking lot","Store parking","Street side","Other location"],key:'location'},{q:"Your name?",input:true,key:'name',placeholder:'John Smith'},{q:"Your phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'}],build:function(a){return "AUTOMOTIVE SERVICE REQUEST\n\nClient: "+a.name+"\nPhone: "+a.phone+"\nVehicle: "+a.year+" "+a.make+"\nSituation: "+a.situation+"\nLocation: "+a.location+"\n\nPlease contact me."}},
   safe:{steps:[{q:"What kind of safe?",opts:["Home / gun safe","Commercial safe","TL / high security","Antique / vintage","Floor / wall safe","Jewelry chest"],key:'type'},{q:"What's the issue?",opts:["Won't open / locked out","Dial spins freely","Digital keypad dead","Combo forgotten","Handle broken","Won't lock"],key:'issue'},{q:"Brand (if known)?",input:true,key:'brand',placeholder:'AMSEC, Gardall, Liberty, etc.'},{q:"Approx age?",opts:["New (0-5 yrs)","Modern (5-20)","Vintage (20-50)","Antique (50+)","Unknown"],key:'age'},{q:"Your name?",input:true,key:'name',placeholder:'John Smith'},{q:"Your phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'}],build:function(a){return "SAFE SERVICE REQUEST\n\nClient: "+a.name+"\nPhone: "+a.phone+"\nSafe type: "+a.type+"\nBrand: "+a.brand+"\nAge: "+a.age+"\nIssue: "+a.issue+"\n\nPlease contact me."}}
 };
-
 var trades = {
-  locksmith:{icon:"\ud83d\udd10",subs:[{key:"resi",label:"\ud83c\udfe0 Residential"},{key:"comm",label:"\ud83c\udfe2 Commercial"},{key:"auto",label:"\ud83d\ude97 Automotive"},{key:"safe",label:"\ud83d\udd12 Safe"}]},
+  locksmith:{icon:"\ud83d\udd10",subs:[{key:"resi",label:"Residential"},{key:"comm",label:"Commercial"},{key:"auto",label:"Automotive"},{key:"safe",label:"Safe"}]},
   plumbing:{icon:"\ud83d\udd27",subs:[]},
   hvac:{icon:"\ud83c\udf21",subs:[]},
   towing:{icon:"\ud83d\udece",subs:[]},
@@ -693,26 +747,21 @@ var tradeFlows={};
 for(var tk in trades){
   tradeFlows[tk]={flows:{},subs:trades[tk].subs};
 }
-// Link locksmith flows
+// Link locksmith flows to tradeFlows
 var lt=trades.locksmith;
 lt.subs.forEach(function(s){
   tradeFlows.locksmith.flows[s.key]=flows[s.key];
 });
-var state={};
 
+var state={};
 function startFlow(key){state[key]={answers:{},step:0,started:true};renderStep(key);}
 function renderStep(key){
-  // Support both flat (legacy) and nested (tradeFlows) modes
-  if(!flows[key]&&tradeFlows[currentTrade]&&tradeFlows[currentTrade].flows[key]){
-    flows[key]=tradeFlows[currentTrade].flows[key];
-  }
-
   var f=flows[key],s=state[key],step=f.steps[s.step],total=f.steps.length;
   var dh='';for(var i=0;i<total;i++){var c=i===s.step?'active':i<s.step?'done':'';dh+='<span class="'+c+'"></span>';}
-  var dotsEl=document.getElementById(key+'Dots')||document.getElementById('mainDots');if(dotsEl)dotsEl.innerHTML=dh;
-  var slEl=document.getElementById(key+'StepLabel')||document.getElementById('mainStepLabel');if(slEl)slEl.textContent='Step '+(s.step+1)+' of '+total;
+  var dEl=document.getElementById(key+'Dots')||document.getElementById('mainDots');if(dEl)dEl.innerHTML=dh;
+  var sEl=document.getElementById(key+'StepLabel')||document.getElementById('mainStepLabel');if(sEl)sEl.textContent='Step '+(s.step+1)+' of '+total;
   var qEl=document.getElementById(key+'Q')||document.getElementById('mainQ');if(qEl)qEl.textContent=step.q;
-  var oe=document.getElementById(key+'Opts')||document.getElementById('mainOpts'),ie=document.getElementById(key+'Input')||document.getElementById('mainInput'),ne=document.getElementById(key+'Nav')||document.getElementById('mainNav');
+  var oe=document.getElementById(key+'Opts')||document.getElementById('mainOpts');var ie=document.getElementById(key+'Input')||document.getElementById('mainInput');var ne=document.getElementById(key+'Nav')||document.getElementById('mainNav');
   if(step.opts){
     oe.style.display='flex';ie.style.display='none';
     // Filter options by locksmith's selected services (first step of each flow)
@@ -751,28 +800,27 @@ function showResult(key){
   var servicePrices=settings.servicePrices||{};
   var selectedServices=s.answers.situation||s.answers.service||'';
   var servicePrice=servicePrices[selectedServices]||0;
-  var mileageCost=0;  // Customer enters own distance in flow
-  var total=tripFee+servicePrice+mileageCost;
+  var total=tripFee+servicePrice;
   
-  var estimateHtml='<div style="background:var(--surface);border-radius:8px;padding:14px;margin:12px 0;text-align:left">';
-  estimateHtml+='<h3 style="color:var(--accent);margin-bottom:8px">📋 Service Estimate</h3>';
-  estimateHtml+='<div style="font-size:13px;line-height:1.8">';
-  estimateHtml+=msg.replace(/\n/g,'<br>');
-  estimateHtml+='</div>';
+  var est='<div style="background:var(--surface);border-radius:8px;padding:14px;margin:12px 0;text-align:left">';
+  est+='<h3 style="color:var(--accent);margin-bottom:8px">📋 Service Estimate</h3>';
+  est+='<div style="font-size:13px;line-height:1.8">';
+  est+=msg.replace(/\n/g,'<br>');
+  est+='</div>';
   if(total>0){
-    estimateHtml+='<hr style="border:none;border-top:1px solid var(--border);margin:12px 0">';
-    estimateHtml+='<table style="width:100%;font-size:13px">';
-    estimateHtml+='<tr><td>Trip fee:</td><td style="text-align:right;font-weight:600">$'+tripFee.toFixed(2)+'</td></tr>';
-    if(servicePrice>0)estimateHtml+='<tr><td>Service:</td><td style="text-align:right;font-weight:600">$'+servicePrice.toFixed(2)+'</td></tr>';
-    estimateHtml+='<tr style="border-top:1px solid var(--border)"><td style="padding-top:6px;font-weight:700">Est. Total:</td><td style="text-align:right;padding-top:6px;font-weight:700;color:var(--accent)">$'+total.toFixed(2)+'</td></tr>';
-    estimateHtml+='</table>';
-    estimateHtml+='<p style="color:var(--muted);font-size:11px;margin-top:8px">* Final price may vary. Technician confirms on call.</p>';
+    est+='<hr style="border:none;border-top:1px solid var(--border);margin:12px 0">';
+    est+='<table style="width:100%;font-size:13px">';
+    est+='<tr><td>Trip fee:</td><td style="text-align:right;font-weight:600">$'+tripFee.toFixed(2)+'</td></tr>';
+    if(servicePrice>0)est+='<tr><td>Service:</td><td style="text-align:right;font-weight:600">$'+servicePrice.toFixed(2)+'</td></tr>';
+    est+='<tr style="border-top:1px solid var(--border)"><td style="padding-top:6px;font-weight:700">Est. Total:</td><td style="text-align:right;padding-top:6px;font-weight:700;color:var(--accent)">$'+total.toFixed(2)+'</td></tr>';
+    est+='</table>';
+    est+='<p style="color:var(--muted);font-size:11px;margin-top:8px">* Final price may vary. Technician confirms on call.</p>';
   }
-  estimateHtml+='</div>';
-  estimateHtml+='<div style="margin:16px 0"><button class="primary" onclick="confirmSend(''+key+'',''+fullPhone+'',''+email+'',''+subj.replace(/'/g,"\\'")+'')" style="width:100%;background:var(--accent);color:var(--bg);border:none;padding:14px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer">✅ Confirm &amp; Send Request</button></div>';
-  estimateHtml+='<button class="reset-btn" onclick="startFlow(''+key+'')">Start Over</button>';
+  est+='</div>';
+  est+='<div style="margin:16px 0"><button onclick="confirmSend(\''+key+'\',\''+fullPhone+'\',\''+email+'\',\''+subj.replace(/'/g,"\\'")+'\')" style="width:100%;background:var(--accent);color:var(--bg);border:none;padding:14px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer">✅ Confirm & Send Request</button></div>';
+  est+='<button class="reset-btn" onclick="startFlow(\''+key+'\')">Start Over</button>';
   
-  el.innerHTML=estimateHtml;
+  el.innerHTML=est;
   el.classList.add('show');
   var oE=document.getElementById(key+'Opts')||document.getElementById('mainOpts');if(oE)oE.style.display='none';
   var iE=document.getElementById(key+'Input')||document.getElementById('mainInput');if(iE)iE.style.display='none';
@@ -783,15 +831,13 @@ function confirmSend(key,fullPhone,email,subj){
   var f=flows[key],s=state[key],msg=f.build(s.answers);
   var fullMsg=msg;
   
-  // Send via both channels
   if(fullPhone){
-    var smsWin=window.open('sms:'+fullPhone+'?body='+encodeURIComponent(fullMsg),'_blank');
+    window.open('sms:'+fullPhone+'?body='+encodeURIComponent(fullMsg),'_blank');
   }
   if(email){
-    var emailWin=window.open('mailto:'+email+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(fullMsg),'_blank');
+    window.open('mailto:'+email+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(fullMsg),'_blank');
   }
   
-  // Show callback popup
   var cbEl=document.getElementById(key+'Result')||document.getElementById('mainResult');
   if(cbEl){
     cbEl.innerHTML='<div style="text-align:center;padding:20px">'
@@ -799,7 +845,7 @@ function confirmSend(key,fullPhone,email,subj){
       +'<h3 style="color:var(--green);margin-bottom:8px">Request Sent!</h3>'
       +'<p style="color:var(--muted);font-size:14px;line-height:1.5">Your service request has been sent. The technician will call you back as soon as possible to confirm the appointment and finalize pricing.</p>'
       +'<p style="color:var(--text);font-size:13px;margin-top:12px">Please keep your phone nearby.</p>'
-      +'<button class="reset-btn" onclick="startFlow(''+key+'')" style="margin-top:16px">Submit Another Request</button>'
+      +'<button class="reset-btn" onclick="startFlow(\''+key+'\')" style="margin-top:16px">Submit Another Request</button>'
       +'</div>';
   }
 }
