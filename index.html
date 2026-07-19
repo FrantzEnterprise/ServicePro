@@ -359,7 +359,7 @@ var settings = {};
 var drawerUnlocked = false;
 
 function loadSettings(){
-  try{var s=localStorage.getItem('lockcmd_settings');settings=s?JSON.parse(s):JSON.parse(JSON.stringify(defaultSettings));}catch(e){settings=JSON.parse(JSON.stringify(defaultSettings));}
+  try{var s=localStorage.getItem('servicepro_settings');settings=s?JSON.parse(s):JSON.parse(JSON.stringify(defaultSettings));}catch(e){settings=JSON.parse(JSON.stringify(defaultSettings));}
   // Migrate old settings that lack services
   if(!settings.services)settings.services=JSON.parse(JSON.stringify(defaultSettings.services));
   if(!settings.pinHash){
@@ -372,7 +372,7 @@ function loadSettings(){
 }
 
 function saveSettings(){
-  localStorage.setItem('lockcmd_settings',JSON.stringify(settings));
+  localStorage.setItem('servicepro_settings',JSON.stringify(settings));
   applySettings();
 }
 
@@ -445,7 +445,7 @@ function setupNext(n){
       }
       document.getElementById('pinMatchErr').style.display='none';
       settings.pinHash=sha256(pin);
-      localStorage.setItem('lockcmd_settings',JSON.stringify(settings));
+      localStorage.setItem('servicepro_settings',JSON.stringify(settings));
       // Also save biz name
       var name=document.getElementById('setupBizName').value.trim();
       if(name){settings.bizName=name;saveSettings();}
@@ -466,7 +466,7 @@ function setupNext(n){
       settings.phone=document.getElementById('setupPhone').value.trim();
       settings.email=document.getElementById('setupEmail').value.trim();
       settings.country=document.getElementById('setupCountry').value;
-      try{localStorage.setItem('lockcmd_settings',JSON.stringify(settings));}catch(e){alert('Save failed: '+e.message);}
+      try{localStorage.setItem('servicepro_settings',JSON.stringify(settings));}catch(e){alert('Save failed: '+e.message);}
       applySettings();
     }
     document.getElementById('setupStep'+setupStep).style.display='none';
@@ -481,7 +481,7 @@ function setupPrev(n){
 }
 function skipSetup(){
   settings.pinHash=sha256('0000');
-  localStorage.setItem('lockcmd_settings',JSON.stringify(settings));
+  localStorage.setItem('servicepro_settings',JSON.stringify(settings));
   drawerUnlocked=true;
   document.getElementById('setupOverlay').classList.add('hidden');
   document.getElementById('gearBtn').classList.add('show');
@@ -654,7 +654,7 @@ function importSettings(e){
 function resetSettings(){
   if(confirm('Reset all settings to default? This will clear your PIN and the gear will hide.')){
     settings=JSON.parse(JSON.stringify(defaultSettings));
-    localStorage.setItem('lockcmd_settings',JSON.stringify(settings));
+    localStorage.setItem('servicepro_settings',JSON.stringify(settings));
     drawerUnlocked=false;
     document.getElementById('gearBtn').classList.remove('show');
     document.getElementById('setupOverlay').classList.remove('hidden');
