@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,user-scalable=yes">
+<title>❓ Help Guide — ServicePro</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--bg2:#161b22;--surface:#21262d;--surface2:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--accent2:#f0883e;--green:#3fb950;--border:#30363d;--radius:10px;--font:'Inter','Segoe UI',system-ui,sans-serif}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+.top{background:var(--bg2);padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.top .brand{font-weight:700;font-size:15px;display:flex;align-items:center;gap:5px}
+.top .brand span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.top a{color:var(--accent);font-size:12px;text-decoration:none;padding:3px 8px;background:var(--surface);border-radius:4px;margin-left:auto}
+.wrap{max-width:750px;margin:0 auto;padding:24px 16px}
+h1{font-size:24px;color:var(--accent);margin-bottom:4px}
+h1 span{font-size:14px;color:var(--muted);font-weight:400;display:block;margin-top:2px}
+h2{font-size:18px;color:var(--accent2);margin:28px 0 12px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+h3{font-size:15px;color:var(--green);margin:16px 0 6px}
+p{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:10px}
+.step-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin:10px 0}
+.step-box .icon{font-size:22px;margin-bottom:4px}
+.step-box ol{padding-left:18px;color:var(--muted);font-size:13px;line-height:1.7}
+.step-box ol li{margin-bottom:4px}
+.step-box strong{color:var(--text)}
+.example{background:var(--surface);border-left:3px solid var(--accent2);padding:10px 14px;border-radius:0 6px 6px 0;margin:8px 0;font-size:13px;color:var(--muted);line-height:1.5}
+.caution{background:var(--surface);border-left:3px solid var(--orange);padding:10px 14px;border-radius:0 6px 6px 0;margin:8px 0;font-size:13px;color:var(--orange);line-height:1.5}
+@media(max-width:600px){.wrap{padding:16px 12px}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand">❓ <span>ServicePro Help Guide</span></div>
+  <a href="index.html">← Back</a>
+</div>
+
+<div class="wrap">
+
+<h1>❓ ServicePro Help Guide
+<span>Locksmith Command Center — guided intake flows for locksmith services</span></h1>
+
+<p>ServicePro helps your customers tell you what they need without a long phone call. They answer a few simple questions, then their phone opens a text or email already addressed to you with everything filled in. <strong>They must tap "Send" for you to receive the message.</strong> ServicePro cannot send anything by itself — it only opens their phone's messaging or email app with the draft ready to go.</p>
+
+<!-- ===== SETUP ===== -->
+
+<h2>⚙️ Setup Guide — First Time</h2>
+<p>The first time you open ServicePro on a new device, you'll see the setup wizard. Complete all 7 steps — your settings are stored in your browser and won't reset unless you clear them.</p>
+
+<div class="step-box">
+<div class="icon">🔧</div>
+<ol>
+<li><strong>Welcome</strong> — click "Get Started" to begin, or "Skip" to use default settings (PIN will be <code>0000</code>)</li>
+<li><strong>Create a PIN</strong> — 4-6 digits. This locks the settings drawer so customers can't change your configuration. <strong>Don't forget this PIN.</strong></li>
+<li><strong>Business name</strong> — appears in the top bar so customers know who they're contacting</li>
+<li><strong>Which services do you offer?</strong> — toggle the tabs you provide. Customers will only see tabs you leave on. Turn off anything you don't do.</li>
+<li><strong>Brand colors</strong> — match ServicePro to your website. Pick accent, secondary, and background colors.</li>
+<li><strong>Logo & background image</strong> — optional. Paste a URL to your logo or a background image.</li>
+<li><strong>Your contact info</strong> — your phone number and email address. These are used in the SMS and email links so the customer's message goes directly to you.</li>
+<li><strong>Finish</strong> — ServicePro launches with your settings applied.</li>
+</ol>
+</div>
+
+<div class="example">
+<strong>Example:</strong> Example: Jane only does residential and commercial jobs. In step 4 she turns off Automotive and Safe. She sets her phone to <code>555-0100</code> and email to <code>jane@lockmaster.com</code>. Now customers only see Residential and Commercial tabs, and any text or email they send goes to Jane's phone and email.
+</div>
+
+<h3>🔒 Changing Settings Later</h3>
+<p>After setup, the ⚙️ gear icon appears in the top bar. Click it, enter your PIN, and the settings panel gives you full control:</p>
+<ul style="color:var(--muted);font-size:14px;line-height:1.7;padding-left:18px">
+<li>Show or hide any service tab</li>
+<li><strong>Fine-tune which services you offer</strong> — inside each category, check or uncheck individual services so customers only see options you actually provide</li>
+<li>Change business name, phone, or email</li>
+<li>Change colors, logo, background</li>
+<li>Change your PIN</li>
+<li><strong>Export</strong> settings to a .json file for backup</li>
+<li><strong>Import</strong> settings from a previous backup</li>
+<li><strong>Reset All</strong> — wipes everything back to defaults (including PIN, re-shows setup wizard)</li>
+</ul>
+
+<!-- ===== SEND INSTRUCTIONS ===== -->
+
+<h2>📱 How To Send — Important</h2>
+
+<div class="caution">
+⚠️ <strong>ServicePro does not send messages automatically.</strong> It opens your phone's text or email app with a draft that's already addressed to the locksmith with all the details filled in. <strong>You must tap the "Send" button</strong> for the locksmith to receive your request.
+</div>
+
+<p>At the end of any flow, you'll see two buttons:</p>
+<ul style="color:var(--muted);font-size:14px;line-height:1.7;padding-left:18px">
+<li><strong>📱 Send via Text</strong> — opens your messaging app. The locksmith's number is already filled in as the recipient. The message body contains all the information you entered. <strong>Tap Send.</strong></li>
+<li><strong>📧 Send via Email</strong> — opens your email app. The locksmith's email is already in the "To" field. The subject and body contain your request. <strong>Tap Send.</strong></li>
+<li><strong>📋 Copy</strong> — copies the message text to your clipboard so you can paste it anywhere</li>
+</ul>
+
+<div class="example">
+<strong>Example:</strong> Sarah fills out the Residential flow. She taps "Send via Text." Her phone opens a new message to Bob's number already containing her request. She sees the Send button in her messaging app and taps it. Bob gets the text with Sarah's name, address, and what she needs. If Sarah just closes the app, Bob never gets the message.
+</div>
+
+<h3>🔄 Need More Than One Service?</h3>
+<p>If a customer needs multiple things done (for example a rekey <em>and</em> a safe combo change), they can:</p>
+<ol style="color:var(--muted);font-size:13px;line-height:1.7;padding-left:18px">
+<li>Complete the first flow (Residential → Rekey)</li>
+<li>Tap the <strong>"Also need another service?"</strong> button for the next category (Safe)</li>
+<li>Complete the second flow</li>
+<li>Send each message separately — or use the Copy button to combine them into one</li>
+</ol>
+
+<!-- ===== FLOWS ===== -->
+
+<h2>🏠 Residential Flow</h2>
+<p>For homeowners needing lockout help, rekeying, repairs, or new locks.</p>
+
+<div class="step-box">
+<div class="icon">🔑</div>
+<ol>
+<li><strong>Pick the situation</strong> — locked out, rekey, repair, new install, or key duplication (only what the locksmith offers)</li>
+<li><strong>Pick the lock type</strong> — deadbolt, knob, handle set, smart lock, or not sure</li>
+<li><strong>Set urgency</strong> — emergency (locked out now), today, or schedule</li>
+<li><strong>Enter your name</strong></li>
+<li><strong>Enter your phone number</strong></li>
+<li><strong>Enter the service address</strong></li>
+</ol>
+</div>
+
+<h2>🏢 Commercial Flow</h2>
+<p>For businesses needing master key systems, rekeying, panic hardware, or access control.</p>
+
+<div class="step-box">
+<div class="icon">🏢</div>
+<ol>
+<li><strong>Pick the business type</strong></li>
+<li><strong>Pick the service needed</strong></li>
+<li><strong>Approx number of doors</strong></li>
+<li><strong>Enter company name</strong></li>
+<li><strong>Enter phone number</strong></li>
+<li><strong>Enter business address</strong></li>
+</ol>
+</div>
+
+<h2>🚗 Automotive Flow</h2>
+<p>For car lockouts, lost keys, broken ignition, or fob replacement.</p>
+
+<div class="step-box">
+<div class="icon">🚗</div>
+<ol>
+<li><strong>Pick the situation</strong></li>
+<li><strong>Enter vehicle year</strong></li>
+<li><strong>Enter vehicle make & model</strong></li>
+<li><strong>Pick the location type</strong></li>
+<li><strong>Enter your name</strong></li>
+<li><strong>Enter your phone number</strong></li>
+</ol>
+</div>
+
+<h2>🔒 Safe Flow</h2>
+<p>For customers needing safe opening, combo changes, repairs, or restoration.</p>
+
+<div class="step-box">
+<div class="icon">🔒</div>
+<ol>
+<li><strong>Pick the safe type</strong></li>
+<li><strong>Pick the issue</strong></li>
+<li><strong>Enter brand (if known)</strong></li>
+<li><strong>Pick approximate age</strong></li>
+<li><strong>Enter your name</strong></li>
+<li><strong>Enter your phone number</strong></li>
+</ol>
+</div>
+
+<h2>❓ Tips</h2>
+<ul style="color:var(--muted);font-size:14px;line-height:1.7;padding-left:18px">
+<li>Each flow takes about 30 seconds to complete</li>
+<li>Use ← Back if you make a mistake</li>
+<li>Tap "Start Over" at the end to redo a flow</li>
+<li>Switch between tabs anytime — each flow is independent</li>
+<li>If you need multiple services, complete one flow, then tap the next category button that appears, then send each message</li>
+</ul>
+
+</div>
+</body>
+</html>
