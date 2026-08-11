@@ -329,6 +329,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 <input type="password" id="setNewPin" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="Leave blank to keep current">
 <label>Confirm new PIN</label>
 <input type="password" id="setNewPinConfirm" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="Confirm">
+<div class="section-title">🔏 About / License</div>
+<div id="licenseInfo" style="font-size:12px;color:var(--text);background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:4px">
+  <div style="margin-bottom:4px"><span style="color:var(--muted)">Client:</span> <span id="licClient">—</span></div>
+  <div style="margin-bottom:4px"><span style="color:var(--muted)">License key:</span> <span id="licKey" style="font-family:monospace">—</span></div>
+  <div style="margin-bottom:4px"><span style="color:var(--muted)">Trades included:</span> <span id="licTrades">—</span></div>
+  <div style="margin-bottom:4px"><span style="color:var(--muted)">Verification hash:</span> <span id="licHash" style="font-family:monospace">—</span></div>
+  <div style="color:var(--muted);font-size:10px;margin-top:6px">This license identifies your ServicePro copy. Keep your license key handy — support may ask for it to verify your account.</div>
+</div>
 <div class="section-title">💾 Backup / Restore</div>
 <p style="color:var(--muted);font-size:11px;margin-bottom:6px">Export settings to a file, or import from a previous backup.</p>
 <div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -546,6 +554,16 @@ function handleSettingsDone(){
 
 function updateSettingsDrawer(){
   if(!document.getElementById('setBizName'))return;
+  // Populate About/License section
+  var lic=document.getElementById('licClient');
+  if(lic){
+    var L=typeof LICENSE!=='undefined'?LICENSE:{};
+    document.getElementById('licClient').textContent=L.client||'Unlicensed copy';
+    document.getElementById('licKey').textContent=L.key||'(none)';
+    document.getElementById('licTrades').textContent=(L.trades&&L.trades.length)?L.trades.join(', '):'(none)';
+    document.getElementById('licHash').textContent=L.vh||'(none)';
+  }
+
   var s=settings,labels={resi:'Residential',comm:'Commercial',auto:'Automotive',safe:'Safe'};
   var el=document.getElementById('settingsTabs');if(!el)return;
   el.innerHTML='';
