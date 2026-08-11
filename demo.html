@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ServicePro — The Job-Getting Form for Tradespeople</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--bg2:#161b22;--surface:#21262d;--surface2:#30363d;--text:#e6edf3;--muted:#9aa5b1;--accent:#58a6ff;--accent2:#f0883e;--green:#3fb950;--border:#30363d;--radius:14px;--font:'Inter','Segoe UI',system-ui,sans-serif}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;font-size:17px}
+a{color:var(--accent);text-decoration:none}
+.wrap{max-width:880px;margin:0 auto;padding:0 20px}
+.hero{text-align:center;padding:60px 20px 40px;background:radial-gradient(ellipse at top,#1a2740 0%,var(--bg) 60%)}
+.hero .badge{display:inline-block;background:rgba(88,166,255,.12);color:var(--accent);border:1px solid rgba(88,166,255,.3);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;letter-spacing:.3px;margin-bottom:18px}
+.hero h1{font-size:42px;line-height:1.15;margin-bottom:14px;font-weight:800}
+.hero h1 span{color:var(--accent)}
+.hero p{font-size:19px;color:var(--muted);max-width:620px;margin:0 auto 28px}
+.cta{display:inline-block;background:var(--accent);color:var(--bg);font-weight:700;font-size:17px;padding:15px 34px;border-radius:10px;margin:6px}
+.cta.alt{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:620px;margin:36px auto 0}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px}
+.stat .n{font-size:26px;font-weight:800;color:var(--accent)}
+.stat .l{font-size:13px;color:var(--muted)}
+.section{padding:48px 0;border-top:1px solid var(--border)}
+.section h2{font-size:30px;margin-bottom:8px;font-weight:800}
+.section .sub{color:var(--muted);font-size:17px;max-width:640px;margin-bottom:28px}
+.trades{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.trade{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;transition:.15s}
+.trade:hover{border-color:var(--accent)}
+.trade .ic{font-size:30px;margin-bottom:8px}
+.trade .nm{font-weight:600;font-size:15px}
+.steps{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.step{display:flex;gap:14px;align-items:flex-start;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px}
+.step .num{flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--bg);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:16px}
+.step .tt{font-weight:700;font-size:16px;margin-bottom:2px}
+.step .dd{color:var(--muted);font-size:15px}
+/* video / demo block */
+.demo-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.video-wrap{position:relative;width:100%;padding-top:56.25%;background:#000}
+.video-wrap video,.video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.demo-fallback{padding:30px;text-align:center}
+.phone{width:280px;margin:0 auto;background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:14px;box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.phone .screen{background:var(--bg);border-radius:16px;padding:16px;text-align:left;min-height:340px}
+.phone .brand{font-weight:700;font-size:13px;margin-bottom:12px}
+.phone .q{font-size:12px;color:var(--muted);margin-bottom:10px}
+.phone .opt{background:var(--surface);border:1px solid var(--border);padding:9px 12px;border-radius:8px;margin-bottom:8px;font-size:13px}
+.phone .opt.hi{border-color:var(--accent);background:rgba(88,166,255,.1);color:var(--accent)}
+.demo-nav{display:flex;gap:8px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.demo-nav button{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}
+.demo-nav button.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.demo-caption{text-align:center;color:var(--muted);font-size:14px;margin-top:14px;min-height:22px}
+.final{text-align:center;padding:56px 20px;border-top:1px solid var(--border)}
+.final h2{font-size:30px;margin-bottom:8px}
+.final p{color:var(--muted);font-size:17px;margin-bottom:26px}
+.foot{text-align:center;padding:26px;color:var(--muted);font-size:13px;border-top:1px solid var(--border)}
+@media(max-width:600px){
+  .hero h1{font-size:32px}
+  .hero p{font-size:17px}
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .trades{grid-template-columns:repeat(2,1fr)}
+  .section h2{font-size:26px}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="badge">🔧 Built for 9 trades · one simple form</div>
+    <h1>Turn calls &amp; walk-ins into <span>booked jobs</span></h1>
+    <p>ServicePro gives your customers a fast way to describe what they need — so you show up prepared, quote faster, and close more work.</p>
+    <a class="cta" href="index.html">▶ See a live demo</a>
+    <a class="cta alt" href="#how">How it works</a>
+    <div class="stats">
+      <div class="stat"><div class="n">9</div><div class="l">Trades supported</div></div>
+      <div class="stat"><div class="n">7 Qs</div><div class="l">Per request, max</div></div>
+      <div class="stat"><div class="n">60s</div><div class="l">To submit a job</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="how">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <p class="sub">Your customer answers a few quick questions. The details land on your phone — then you call them back to close the job.</p>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><div><div class="tt">Customer picks their trade</div><div class="dd">Locksmith, plumbing, HVAC, towing, electrical, pest, garage door, tree, or pool.</div></div></div>
+      <div class="step"><div class="num">2</div><div><div class="tt">They answer 6 quick questions</div><div class="dd">What's wrong, where, urgency, name, phone, address — plus optional photos.</div></div></div>
+      <div class="step"><div class="num">3</div><div><div class="tt">The request reaches you by text or email</div><div class="dd">Emergency flags are highlighted so you know what's urgent.</div></div></div>
+      <div class="step"><div class="num">4</div><div><div class="tt">You call them back and book it</div><div class="dd">The callback is how you build trust and lock in the appointment.</div></div></div>
+    </div>
+    <a class="cta" href="index.html">Open the request form →</a>
+  </div>
+</div>
+
+<div class="section">
+  <div class="wrap">
+    <h2>All 9 trades, one platform</h2>
+    <p class="sub">One codebase, every trade. Your customers get a form that speaks their language.</p>
+    <div class="trades">
+      <div class="trade"><div class="ic">🔐</div><div class="nm">Locksmith</div></div>
+      <div class="trade"><div class="ic">🔧</div><div class="nm">Plumbing</div></div>
+      <div class="trade"><div class="ic">🌡</div><div class="nm">HVAC</div></div>
+      <div class="trade"><div class="ic">🛎</div><div class="nm">Towing</div></div>
+      <div class="trade"><div class="ic">⚡</div><div class="nm">Electrical</div></div>
+      <div class="trade"><div class="ic">🐜</div><div class="nm">Pest Control</div></div>
+      <div class="trade"><div class="ic">🚪</div><div class="nm">Garage Door</div></div>
+      <div class="trade"><div class="ic">🌳</div><div class="nm">Tree Service</div></div>
+      <div class="trade"><div class="ic">🏊</div><div class="nm">Pool Service</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="wrap">
+    <h2>See it in action</h2>
+    <p class="sub">A screenshot-style walkthrough of how a customer submits a request.</p>
+    <div class="demo-box">
+      <!-- Embed a video here if you have one (replace the src), otherwise the visual demo below runs -->
+      <div class="video-wrap" id="videoWrap" style="display:none">
+        <video id="demoVideo" controls preload="metadata">
+          <source src="" type="video/mp4">
+        </video>
+      </div>
+      <div class="demo-fallback" id="demoFallback">
+        <div class="phone">
+          <div class="screen" id="demoScreen"></div>
+        </div>
+        <div class="demo-nav" id="demoNav"></div>
+        <div class="demo-caption" id="demoCaption"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="final">
+  <div class="wrap">
+    <h2>Ready to make your phone ring with qualified jobs?</h2>
+    <p>Give ServicePro a try — it takes 60 seconds to see the difference.</p>
+    <a class="cta" href="index.html">Get your ServicePro form →</a>
+  </div>
+</div>
+
+<div class="foot">
+  ServicePro · The job-getting form for tradespeople
+</div>
+
+<script>
+// Screenshot-style walkthrough (falls back automatically if no video is set)
+var DEMO_VIDEO = ""; // set e.g. "demo.mp4" to use a real video instead
+var steps = [
+  {brand:"🔧 ServicePro", q:"What's the situation?", opts:["Locked out","Need rekey","Lock repair","New install","Keys need duplication"], hi:0, cap:"Step 1 — the customer picks what applies."},
+  {brand:"🔧 ServicePro", q:"What type of lock?", opts:["Deadbolt","Knob lock","Handle set","Smart lock","Not sure"], hi:0, cap:"Step 2 — a couple of quick details."},
+  {brand:"🔧 ServicePro", q:"Is this urgent?", opts:["Yes — locked out now","Today","Can schedule"], hi:0, cap:"Step 3 — urgency is captured and flagged."},
+  {brand:"🔧 ServicePro", q:"Your name?", input:"John Smith", cap:"Step 4 — name and phone."},
+  {brand:"🔧 ServicePro", q:"Service address?", input:"123 Main St", cap:"Step 5 — where to go."},
+  {brand:"🔧 ServicePro", q:"📤", send:true, cap:"Step 6 — one tap sends it as text or email. You call them back and book it."}
+];
+var cur=0;
+function render(){
+  var s=steps[cur], sc=document.getElementById('demoScreen');
+  var html='<div class="brand">'+s.brand+'</div><div class="q">'+s.q+'</div>';
+  if(s.opts){s.opts.forEach(function(o,i){html+='<div class="opt'+(i===s.hi?' hi':'')+'">'+o+'</div>';});}
+  if(s.input){html+='<div class="opt hi">'+s.input+'</div>';}
+  if(s.send){html+='<div class="opt hi">📩 Sent! We&#39;ll call you back.</div>';}
+  sc.innerHTML=html;
+  document.getElementById('demoCaption').textContent=s.cap;
+  var nav=document.getElementById('demoNav');
+  nav.innerHTML='';
+  steps.forEach(function(_,i){var b=document.createElement('button');b.textContent=(i+1);b.className=(i===cur?'on':'');b.onclick=function(){cur=i;render();};nav.appendChild(b);});
+}
+function initDemo(){
+  if(DEMO_VIDEO){
+    document.getElementById('videoWrap').style.display='';
+    document.getElementById('demoFallback').style.display='none';
+    document.getElementById('demoVideo').src=DEMO_VIDEO;
+  }else{
+    document.getElementById('demoFallback').style.display='';
+    render();
+  }
+}
+initDemo();
+</script>
+</body>
+</html>
