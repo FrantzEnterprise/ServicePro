@@ -354,6 +354,22 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 </div>
 
 <script>
+/* Visible version badge: proves which build version is actually loading (cache debugging). */
+(function(){
+  try{
+    if(document.readyState!=='loading'){pad();}else{document.addEventListener('DOMContentLoaded',pad);}
+    function pad(){
+      var b=document.createElement('div');
+      b.id='spVerBadge';
+      b.style.cssText='position:fixed;bottom:6px;right:8px;z-index:2147483647;background:rgba(13,17,23,.82);color:#8b949e;border:1px solid #30363d;border-radius:6px;padding:3px 7px;font-size:10px;font-family:monospace;letter-spacing:.3px;pointer-events:none';
+      var d=new Date();
+      b.textContent='SP v7.8 live';
+      document.body.appendChild(b);
+    }
+  }catch(e){}
+})();
+</script>
+<script>
 /* Error reporter: catch any load/runtime error and display it on-screen instead of a blank page.
    This is in its OWN script block so it survives even a parse error in the main app script. */
 (function(){
@@ -758,6 +774,12 @@ for(var wtk in trades){var wt=trades[wtk];if(wt.subs&&wt.subs.length){wt.subs.fo
 
 var state={};
 function showPlaceholder(key){
+  try{
+    if(tradeFlows&&tradeFlows[currentTrade]&&tradeFlows[currentTrade].flows){
+      var pk=Object.keys(tradeFlows[currentTrade].flows)[0];
+      if(pk&&flows[pk]){startFlow(pk);return;}
+    }
+  }catch(e){}
   var el=document.getElementById(key+"Main")||document.getElementById("mainSection")||document.body;
   el.innerHTML='<div style=\"text-align:center;padding:40px 16px;color:var(--muted)\"><h3>This service is coming soon</h3><p>The web request form for this trade is being set up. Please call us directly.</p></div>';
 }
@@ -883,6 +905,6 @@ function revealIfBlank(){
 }
 </script>
 </body>
-<!-- ServicePro v7.7 -->
+<!-- ServicePro v7.8 -->
 <!-- v5.3b -->
 </html>
