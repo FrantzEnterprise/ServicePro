@@ -10,7 +10,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0d1117;--bg2:#161b22;--surface:#21262d;--surface2:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--accent2:#f0883e;--green:#3fb950;--orange:#d29922;--border:#30363d;--radius:12px;--font:'Inter','Segoe UI',system-ui,sans-serif}
-body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:17px}
 .top{background:var(--bg2);padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
 .top .brand{font-weight:700;font-size:15px;display:flex;align-items:center;gap:5px;flex-shrink:0}
 .top a{color:var(--cyan);font-size:12px;text-decoration:none;padding:3px 8px;background:var(--surface);border-radius:4px}
@@ -56,30 +56,30 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .setup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px}
 .setup-overlay.hidden{display:none}
 .setup-box{background:var(--bg2);border:1px solid var(--accent);border-radius:var(--radius);padding:28px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto}
-.setup-box h2{font-size:20px;color:var(--accent);margin-bottom:4px}
-.setup-box p{color:var(--muted);font-size:13px;margin-bottom:12px}
-.setup-box .step-ind{text-align:center;font-size:11px;color:var(--muted);margin-bottom:12px;letter-spacing:1px}
-.setup-box label{display:block;color:var(--muted);font-size:12px;margin-top:8px;margin-bottom:3px}
-.setup-box input,.setup-box select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:14px;color:var(--text);font-family:var(--font)}
-.setup-box .toggle-group{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
-.setup-box .toggle-btn{padding:8px 16px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-size:13px;transition:.15s}
+.setup-box h2{font-size:22px;color:var(--accent);margin-bottom:6px}
+.setup-box p{color:var(--muted);font-size:15px;margin-bottom:14px;line-height:1.6}
+.setup-box .step-ind{text-align:center;font-size:12px;color:var(--muted);margin-bottom:14px;letter-spacing:1px}
+.setup-box label{display:block;color:var(--muted);font-size:13px;margin-top:10px;margin-bottom:4px}
+.setup-box input,.setup-box select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--text);font-family:var(--font)}
+.setup-box .toggle-group{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.setup-box .toggle-btn{padding:10px 18px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-size:14px;transition:.15s}
 .setup-box .toggle-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 .setup-box .toggle-btn.off{opacity:.4}
 .setup-box .color-row{display:flex;gap:6px;align-items:center}
 .setup-box .color-row input[type=color]{width:44px;height:36px;padding:2px;border-radius:4px;cursor:pointer}
 .setup-box .color-row input[type=text]{flex:1}
-.setup-box .nav-btn{width:100%;background:var(--accent);color:var(--bg);border:none;padding:12px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;margin-top:16px}
+.setup-box .nav-btn{width:100%;background:var(--accent);color:var(--bg);border:none;padding:16px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer;margin-top:18px}
 .setup-box .nav-btn:hover{opacity:.85}
-.setup-box .nav-btn.secondary{background:var(--surface);color:var(--text);border:1px solid var(--border);margin-top:8px}
-.setup-box .welcome{text-align:center;padding:10px 0}
-.setup-box .welcome .big-icon{font-size:48px;margin-bottom:10px}
-.setup-box .welcome h2{font-size:22px}
-.setup-box .welcome p{font-size:14px;margin-top:8px}
+.setup-box .nav-btn.secondary{background:var(--surface);color:var(--text);border:1px solid var(--border);margin-top:10px}
+.setup-box .welcome{text-align:center;padding:12px 0}
+.setup-box .welcome .big-icon{font-size:56px;margin-bottom:12px}
+.setup-box .welcome h2{font-size:26px}
+.setup-box .welcome p{font-size:16px;margin-top:10px;line-height:1.6}
 .setup-box .pin-input{text-align:center}
 .setup-box .pin-input input{width:120px;text-align:center;font-size:24px;letter-spacing:6px;padding:10px}
 .setup-box .error{color:#f85149;font-size:12px;margin-top:4px;display:none}
 .setup-box hr{border:none;border-top:1px solid var(--border);margin:12px 0}
-.setup-box .setup-help{color:var(--muted);font-size:12px;margin-top:8px}
+.setup-box .setup-help{color:var(--muted);font-size:13px;margin-top:10px;line-height:1.5}
 .setup-box .setup-help a{color:var(--accent);text-decoration:none}
 
 /* PIN unlock modal */
@@ -376,7 +376,7 @@ var defaultSettings = {
     auto:{"Locked out of car":85,"Lost all keys":120,"Key broke in ignition":150,"Need new fob":175,"Trunk locked":85,"Other":65},
     safe:{"Home / gun safe":195,"Commercial safe":295,"TL / high security":395,"Antique / vintage":250,"Floor / wall safe":225,"Jewelry chest":195}
   },
-  accent:'#58a6ff',accent2:'#f0883e',bg:'#0d1117',bgImg:'',logo:'',fontSize:'16px',pinHash:''
+  accent:'#58a6ff',accent2:'#f0883e',bg:'#0d1117',bgImg:'',logo:'',fontSize:'17px',pinHash:''
 };
 var settings = {};
 var drawerUnlocked = false;
@@ -486,7 +486,11 @@ function setupNext(n){
     document.getElementById('setupStep'+setupStep).style.display='none';
     setupStep=n;
     document.getElementById('setupStep'+setupStep).style.display='block';
-  }catch(e){alert('Error: '+e.message);}
+  }catch(e){
+    // Reliability: never hard-stop the wizard with a scary alert. Try to advance anyway.
+    try{var cur=document.querySelector('.setup-step:not([style*="display: none"])');}catch(e2){}
+    try{var el=document.getElementById('setupStep'+n);if(el){var prev=document.getElementById('setupStep'+setupStep);if(prev)prev.style.display='none';setupStep=n;el.style.display='block';}}catch(e3){}
+  }
 }
 function setupPrev(n){
   document.getElementById('setupStep'+setupStep).style.display='none';
@@ -862,6 +866,6 @@ function revealIfBlank(){
 }
 </script>
 </body>
-<!-- ServicePro v7.3 -->
+<!-- ServicePro v7.4 -->
 <!-- v5.3b -->
 </html>
