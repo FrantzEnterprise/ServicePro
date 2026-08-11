@@ -137,11 +137,21 @@ function buildClient(clientName, trades, noPush, domain){
   js = replaceVar(js, 'trades', '{' + kept.join(',') + '}');
   js = js.replace(/}}\s*;/, '}};');  // clear double semicolon if any
 
-  // ---- 3. flows: only locksmith has real content today ----
-  if (!trades.includes('locksmith')){
-    js = js.replace(/lt=trades\.locksmith[^\n]*\n/, '');   // drop locksmith wiring
-    js = replaceVar(js, 'flows', '{}');
-  }
+  // ---- 3. flows: keep only flows for the purchased trades' subs ----
+  // Gather the set of sub keys belonging to purchased trades (from the already-filtered trades object)
+  const keptSubs = new Set();
+  kept.forEach(tv => {
+    // tv is the raw 'key:{icon:...,subs:[...]}' string — pull sub keys
+    const sm = tv.match(/subs:\[([^\]]*)\]/);
+    if (sm) {
+      (sm[1].match(/key:"([^"]+)"/g) || []).forEach(k => keptSubs.add(k.replace(/key:"/,'').replace(/"/,'')));
+    }
+  });
+  const fb = extractEntries(js, 'flows');
+  const keptFlows = fb.filter(e => keptSubs.has(e.key)).map(e => e.value);
+  js = replaceVar(js, 'flows', keptFlows.length ? '{' + keptFlows.join(',') + '}' : '{}');
+  // drop the old locksmith-specific wiring line (superseded by the generic loop)
+  js = js.replace(/lt=trades\.locksmith[^\n]*\n/, '');
 
   // ---- 4. default trade references -> first purchased ----
   const first = trades[0];
