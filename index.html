@@ -692,10 +692,10 @@ function switchTab(id){
   if(!state[id]||!state[id].started)startFlow(id);
 }
 var flows={
-  resi:{steps:[{q:"What's the situation?",opts:["Locked out","Need rekey","Lock repair","New install","Keys need duplication"],key:'situation'},{q:"What type of lock?",opts:["Deadbolt","Knob lock","Handle set","Smart lock","Not sure"],key:'lockType'},{q:"Is this urgent?",opts:["Yes - locked out now","Today","Can schedule"],key:'urgency'},{q:"Your name?",input:true,key:'name',placeholder:'John Smith'},{q:"Your phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'},{q:"Service address?",input:true,key:'address',placeholder:'123 Main St, City, State'}],build:function(a){var u=a.urgency==="Yes - locked out now"?"EMERGENCY":a.urgency==="Today"?"Today":"Scheduled";return "RESIDENTIAL LOCKSMITH REQUEST\n\nClient: "+a.name+"\nPhone: "+a.phone+"\nAddress: "+a.address+"\nSituation: "+a.situation+"\nLock type: "+a.lockType+"\nUrgency: "+u+"\n\nPlease contact me to confirm."}},
-  comm:{steps:[{q:"What type of business?",opts:["Office","Warehouse","Retail","Medical","School/Church","Other commercial"],key:'bizType'},{q:"What's needed?",opts:["Master key system","Rekey multiple doors","Panic hardware service","New door hardware install","Access control","Consultation"],key:'service'},{q:"Approx number of doors?",opts:["1-5","6-15","16-30","30+"],key:'doors'},{q:"Your name / company?",input:true,key:'name',placeholder:'Company name'},{q:"Best phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'},{q:"Business address?",input:true,key:'address',placeholder:'456 Business Ave'}],build:function(a){return "COMMERCIAL SERVICE REQUEST\n\nCompany: "+a.name+"\nPhone: "+a.phone+"\nAddress: "+a.address+"\nBusiness type: "+a.bizType+"\nService: "+a.service+"\nDoors: "+a.doors+"\n\nPlease contact me to schedule a walkthrough."}},
-  auto:{steps:[{q:"What's the situation?",opts:["Locked out of car","Lost all keys","Key broke in ignition","Need new fob","Trunk locked","Other"],key:'situation'},{q:"Vehicle year?",input:true,key:'year',placeholder:'2020'},{q:"Vehicle make & model?",input:true,key:'make',placeholder:'Toyota Camry'},{q:"Where's the vehicle?",opts:["At home","Parking lot","Store parking","Street side","Other location"],key:'location'},{q:"Your name?",input:true,key:'name',placeholder:'John Smith'},{q:"Your phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'}],build:function(a){return "AUTOMOTIVE SERVICE REQUEST\n\nClient: "+a.name+"\nPhone: "+a.phone+"\nVehicle: "+a.year+" "+a.make+"\nSituation: "+a.situation+"\nLocation: "+a.location+"\n\nPlease contact me."}},
-  safe:{steps:[{q:"What kind of safe?",opts:["Home / gun safe","Commercial safe","TL / high security","Antique / vintage","Floor / wall safe","Jewelry chest"],key:'type'},{q:"What's the issue?",opts:["Won't open / locked out","Dial spins freely","Digital keypad dead","Combo forgotten","Handle broken","Won't lock"],key:'issue'},{q:"Brand (if known)?",input:true,key:'brand',placeholder:'AMSEC, Gardall, Liberty, etc.'},{q:"Approx age?",opts:["New (0-5 yrs)","Modern (5-20)","Vintage (20-50)","Antique (50+)","Unknown"],key:'age'},{q:"Your name?",input:true,key:'name',placeholder:'John Smith'},{q:"Your phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'}],build:function(a){return "SAFE SERVICE REQUEST\n\nClient: "+a.name+"\nPhone: "+a.phone+"\nSafe type: "+a.type+"\nBrand: "+a.brand+"\nAge: "+a.age+"\nIssue: "+a.issue+"\n\nPlease contact me."}}
+  resi:{steps:[{q:"What's the situation?",opts:["Locked out","Need rekey","Lock repair","New install","Keys need duplication"],key:'situation'},{q:"What type of lock?",opts:["Deadbolt","Knob lock","Handle set","Smart lock","Not sure"],key:'lockType'},{q:"Is this urgent?",opts:["Yes - locked out now","Today","Can schedule"],key:'urgency'},{q:"Your name?",input:true,key:'name',placeholder:'John Smith'},{q:"Your phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'},{q:"Service address?",input:true,key:'address',placeholder:'123 Main St, City, State'},{upload:true,key:'media'}],build:function(a){var u=a.urgency==="Yes - locked out now"?"EMERGENCY":a.urgency==="Today"?"Today":"Scheduled";return "RESIDENTIAL LOCKSMITH REQUEST\n\nClient: "+a.name+"\nPhone: "+a.phone+"\nAddress: "+a.address+"\nSituation: "+a.situation+"\nLock type: "+a.lockType+"\nUrgency: "+u+"\n\nPlease contact me to confirm."}},
+  comm:{steps:[{q:"What type of business?",opts:["Office","Warehouse","Retail","Medical","School/Church","Other commercial"],key:'bizType'},{q:"What's needed?",opts:["Master key system","Rekey multiple doors","Panic hardware service","New door hardware install","Access control","Consultation"],key:'service'},{q:"Approx number of doors?",opts:["1-5","6-15","16-30","30+"],key:'doors'},{q:"Your name / company?",input:true,key:'name',placeholder:'Company name'},{q:"Best phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'},{q:"Business address?",input:true,key:'address',placeholder:'456 Business Ave'},{upload:true,key:'media'}],build:function(a){return "COMMERCIAL SERVICE REQUEST\n\nCompany: "+a.name+"\nPhone: "+a.phone+"\nAddress: "+a.address+"\nBusiness type: "+a.bizType+"\nService: "+a.service+"\nDoors: "+a.doors+"\n\nPlease contact me to schedule a walkthrough."}},
+  auto:{steps:[{q:"What's the situation?",opts:["Locked out of car","Lost all keys","Key broke in ignition","Need new fob","Trunk locked","Other"],key:'situation'},{q:"Vehicle year?",input:true,key:'year',placeholder:'2020'},{q:"Vehicle make & model?",input:true,key:'make',placeholder:'Toyota Camry'},{q:"Where's the vehicle?",opts:["At home","Parking lot","Store parking","Street side","Other location"],key:'location'},{q:"Your name?",input:true,key:'name',placeholder:'John Smith'},{q:"Your phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'},{upload:true,key:'media'}],build:function(a){return "AUTOMOTIVE SERVICE REQUEST\n\nClient: "+a.name+"\nPhone: "+a.phone+"\nVehicle: "+a.year+" "+a.make+"\nSituation: "+a.situation+"\nLocation: "+a.location+"\n\nPlease contact me."}},
+  safe:{steps:[{q:"What kind of safe?",opts:["Home / gun safe","Commercial safe","TL / high security","Antique / vintage","Floor / wall safe","Jewelry chest"],key:'type'},{q:"What's the issue?",opts:["Won't open / locked out","Dial spins freely","Digital keypad dead","Combo forgotten","Handle broken","Won't lock"],key:'issue'},{q:"Brand (if known)?",input:true,key:'brand',placeholder:'AMSEC, Gardall, Liberty, etc.'},{q:"Approx age?",opts:["New (0-5 yrs)","Modern (5-20)","Vintage (20-50)","Antique (50+)","Unknown"],key:'age'},{q:"Your name?",input:true,key:'name',placeholder:'John Smith'},{q:"Your phone number?",input:true,key:'phone',placeholder:'(555) 123-4567'},{upload:true,key:'media'}],build:function(a){return "SAFE SERVICE REQUEST\n\nClient: "+a.name+"\nPhone: "+a.phone+"\nSafe type: "+a.type+"\nBrand: "+a.brand+"\nAge: "+a.age+"\nIssue: "+a.issue+"\n\nPlease contact me."}}
 };
 var trades = {
   locksmith:{icon:"\ud83d\udd10",subs:[{key:"resi",label:"Residential"},{key:"comm",label:"Commercial"},{key:"auto",label:"Automotive"},{key:"safe",label:"Safe"}]},
@@ -731,14 +731,56 @@ function renderStep(key){
     ie.innerHTML='<input type="text" id="'+key+'InputField" placeholder="'+ph+'" value="'+val+'" onkeydown="if(event.key==\'Enter\')answerInput(\''+key+'\')">';
     setTimeout(function(){var el=document.getElementById(key+'InputField');if(el)el.focus();},50);
   }
-  if(step.opts){ne.innerHTML='';}else{var bb=s.step>0?'<button onclick="back(\''+key+'\')">← Back</button>':'';ne.innerHTML=bb+'<button class="primary" onclick="answerInput(\''+key+'\')">Continue →</button>';}
+  
+  else if(step.upload){
+    oe.style.display='none';ie.style.display='block';
+    var stored=s.answers.media||{photos:[],video:''};
+    ie.innerHTML='<div style="margin:4px 0"><label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Add photos (optional) - tap to attach up to 3 images</label><input type="file" id="'+key+'FileInput" accept="image/*" multiple style="display:none" onchange="handleFiles(\''+key+'\',this)"><button class="flow-btn" style="width:100%;margin-bottom:6px" onclick="document.getElementById(\''+key+'FileInput\').click()">\ud83d\udcf7 Attach Photos ('+stored.photos.length+'/3)</button><div id="'+key+'Thumbs" style="display:flex;flex-wrap:wrap;gap:6px">'+stored.photos.map(function(p){return '<img src="'+p.data+'" style="width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid var(--border)">';}).join('')+'</div></div><div style="margin:8px 0"><label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Or paste a video link (optional)</label><input type="text" id="'+key+'VideoLink" placeholder="https://youtube.com/watch?v=... or iCloud link" value="'+stored.video+'" style="width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:8px;font-size:13px"></div><p style="color:var(--muted);font-size:11px;margin-bottom:4px">Photos &amp; video optional - you can skip and just send the request.</p>';
+  }
+
+  if(step.opts){ne.innerHTML='';}else{var bb=s.step>0?'<button onclick="back(\''+key+'\')">← Back</button>':'';var navBtn=step.upload?'finishUpload(\''+key+'\')':'answerInput(\''+key+'\')';ne.innerHTML=bb+'<button class="primary" onclick="'+navBtn+'(\''+key+'\')">Continue →</button>';}
   var rEl=document.getElementById(key+'Result')||document.getElementById('mainResult');if(rEl)rEl.classList.remove('show');
 }
+
+function handleFiles(key,input){
+  var f=flows[key],s=state[key];s.answers.media=s.answers.media||{photos:[],video:''};
+  var files=[].slice.call(input.files||[]).slice(0,3);
+  var stored=s.answers.media.photos||[];var remaining=3-stored.length;
+  if(files.length>remaining){alert('You can attach up to 3 photos total.');}
+  files=files.slice(0,remaining);
+  files.forEach(function(file){
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var img=new Image();
+      img.onload=function(){
+        var maxW=640,maxH=480;var w=img.width,h=img.height;
+        if(w>maxW){h=h*maxW/w;w=maxW;}
+        if(h>maxH){w=w*maxH/h;h=maxH;}
+        var canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        var dataURL=canvas.toDataURL('image/jpeg',0.7);
+        stored.push({data:dataURL});s.answers.media.photos=stored;
+        renderStep(key);
+        var re=document.getElementById(key+'FileInput');if(re)re.value='';
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function finishUpload(key){
+  var f=flows[key],s=state[key];
+  s.answers.media=s.answers.media||{photos:[],video:''};
+  var vl=document.getElementById(key+'VideoLink');
+  if(vl)s.answers.media.video=vl.value.trim();
+  s.step++;if(s.step>=f.steps.length)showResult(key);else renderStep(key);
+}
+
 function answer(key,val){var f=flows[key],s=state[key],step=f.steps[s.step];s.answers[step.key]=val;s.step++;if(s.step>=f.steps.length)showResult(key);else renderStep(key);}
 function answerInput(key){var f=flows[key],s=state[key],step=f.steps[s.step];var val=document.getElementById(key+'InputField').value.trim();if(!val)return;s.answers[step.key]=val;s.step++;if(s.step>=f.steps.length)showResult(key);else renderStep(key);}
 function back(key){var s=state[key];if(s.step>0){s.step--;renderStep(key);}}
 function showResult(key){
-  var f=flows[key],s=state[key],msg=f.build(s.answers),el=document.getElementById(key+'Result')||document.getElementById('mainResult'),subj="ServicePro: "+key.toUpperCase()+" Service Request";
+  var f=flows[key],s=state[key],msg=f.build(s.answers);var media=s.answers.media||{};if(media.photos&&media.photos.length){msg+='\n\nPHOTOS:\n';media.photos.forEach(function(p){msg+=p.data+'\n';});}if(media.video){msg+='\n\nVIDEO LINK: '+media.video+'\n';}var el=document.getElementById(key+'Result')||document.getElementById('mainResult'),subj="ServicePro: "+key.toUpperCase()+" Service Request";
   var phone=settings.phone||'';var country=settings.country||'1';var fullPhone='+'+country+phone.replace(/[^\d]/g,'');var email=settings.email||'';
   var tripFee=settings.tripFee||0;var total=tripFee;
   var est='<div style="background:var(--surface);border-radius:8px;padding:14px;margin:12px 0;text-align:left"><h3 style="color:var(--accent);margin-bottom:8px">\ud83d\udccb Service Estimate</h3><div style="font-size:13px;line-height:1.8">'+msg.replace(/\n/g,'<br>')+'</div>';
