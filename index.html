@@ -435,6 +435,7 @@ function selectTrade(trade){
   var el=document.querySelector('.trade-btn[data-trade="'+trade+'"]');
   if(el)el.classList.add('active');
   var t=tradeFlows[trade];var tabBar=document.getElementById('tabBar');
+  if(!tabBar)return;
   tabBar.innerHTML='<div class="tab" onclick="openPinModal()" id="tabHome">\ud83c\udfe0</div>';
   if(t&&t.subs&&t.subs.length){t.subs.forEach(function(s,i){
     var tab=document.createElement('div');tab.className='tab'+(i===0?' active':'');
@@ -840,8 +841,27 @@ function copyMsg(key){
 loadSettings();
 var h=location.hash.replace('#','');
 if(h&&document.getElementById('panel-'+h)){switchTab(h);}else{selectTrade('locksmith');}
+
+/* Safety net: if any runtime error left the page blank (only the top bar visible),
+   fall back to showing the main trade grid so customers always reach the app. */
+window.addEventListener('error',function(){revealIfBlank();});
+try{revealIfBlank();}catch(e){}
+function revealIfBlank(){
+  try{
+    // only act if the main app area truly didn't render
+    var body=(document.body?document.body.textContent:'');
+    var hasFlowQuestion=body.indexOf('?')>0 || document.querySelector('.flow-card');
+    var activePanel=document.querySelector('.panel.active');
+    if(activePanel)return; // app rendered fine, leave it alone
+    if(typeof selectTrade!=='function')return;
+    var mp=document.getElementById('panel-main');
+    if(mp){mp.classList.add('active');var all=document.querySelectorAll('.panel');all.forEach(function(p){if(p.id!=='panel-main')p.classList.remove('active');});}
+    var act=document.querySelector('.trade-btn.active');
+    try{selectTrade(act?act.getAttribute('data-trade'):'locksmith');}catch(e2){}
+  }catch(e){}
+}
 </script>
 </body>
-<!-- ServicePro v7.2 -->
+<!-- ServicePro v7.3 -->
 <!-- v5.3b -->
 </html>
