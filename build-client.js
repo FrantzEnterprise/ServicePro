@@ -205,8 +205,11 @@ function buildClient(clientName, trades, noPush, domain){
   const app2 = tags2[tags2.length - 1];
   const jsStart2 = app2.index + '<script>'.length;
   const jsEnd2 = jsStart2 + app2[1].length;
-  const jsMin = minifyJS(js);
-  const out = html.slice(0, jsStart2) + jsMin + html.slice(jsEnd2);
+  // Use the UN-MINIFIED app JS. The master (un-minified) works on all devices;
+  // minification is the ONLY difference from the working master and is the suspect
+  // for device-specific breakage. Un-minified JS is byte-identical logic to master.
+  const jsOut = js; // fall back to un-minified (remove this line to re-enable minifyJS(js))
+  const out = html.slice(0, jsStart2) + jsOut + html.slice(jsEnd2);
   const outFile = path.join(__dirname, slugify(clientName) + '.html');
   fs.writeFileSync(outFile, out);
 
