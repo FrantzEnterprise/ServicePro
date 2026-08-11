@@ -137,6 +137,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   <a href="tech/dashboard.html" style="margin-left:auto">📋 Tech</a>
   <button class="gear" id="gearBtn" onclick="openPinModal()" title="Settings">⚙️</button>
 </div>
+<!-- Visible error reporter: if the app ever crashes on load, show the real error here instead of a blank screen -->
+<div id="errBox" style="display:none;position:fixed;inset:0;z-index:9999;background:#0d1117;color:#f85149;padding:24px;font-size:14px;font-family:monospace;white-space:pre-wrap;line-height:1.6"></div>
 
 
 <div class="trade-selector">
@@ -352,6 +354,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 </div>
 
 <script>
+/* Error reporter: catch any load/runtime error and display it on-screen instead of a blank page */
+(function(){
+  try{
+    function showErr(msg){
+      try{var eb=document.getElementById('errBox');if(eb){eb.style.display='block';eb.textContent+='\n[ServicePro error] '+msg;}}catch(e){}
+    }
+    window.addEventListener('error',function(ev){showErr((ev.message||'')+'\n@'+(ev.filename||'')+':'+(ev.lineno||''));});
+    window.addEventListener('unhandledrejection',function(ev){showErr('Promise: '+(ev.reason&&ev.reason.message||ev.reason));});
+    if(document.readyState==='complete'){/* ok */}
+  }catch(e){}
+})();
 /* ==============================
    SETTINGS & SETUP
    ============================== */
@@ -867,6 +880,6 @@ function revealIfBlank(){
 }
 </script>
 </body>
-<!-- ServicePro v7.5 -->
+<!-- ServicePro v7.6 -->
 <!-- v5.3b -->
 </html>
