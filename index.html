@@ -427,12 +427,12 @@ function selectTrade(trade){
   if(el)el.classList.add('active');
   var t=tradeFlows[trade];var tabBar=document.getElementById('tabBar');
   tabBar.innerHTML='<div class="tab" onclick="openPinModal()" id="tabHome">\ud83c\udfe0</div>';
-  if(t&&t.subs){t.subs.forEach(function(s,i){
+  if(t&&t.subs&&t.subs.length){t.subs.forEach(function(s,i){
     var tab=document.createElement('div');tab.className='tab'+(i===0?' active':'');
     tab.textContent=s.label;tab.onclick=function(k){return function(){switchTab(k);startFlow(k);};}(s.key);
     tab.setAttribute('data-tab',s.key);tab.id='tab-'+s.key;tabBar.appendChild(tab);
   });}
-  currentSub=t&&t.subs?t.subs[0].key:'resi';switchTab(currentSub);startFlow(currentSub);
+  currentSub=t&&t.subs&&t.subs.length?t.subs[0].key:'resi';switchTab(currentSub);startFlow(currentSub);
 }
 function setupNext(n){
   try{
@@ -708,7 +708,11 @@ for(var tk in trades){tradeFlows[tk]={flows:{},subs:trades[tk].subs};}
 lt=trades.locksmith;lt.subs.forEach(function(s){tradeFlows.locksmith.flows[s.key]=flows[s.key];});
 
 var state={};
-function startFlow(key){state[key]={answers:{},step:0,started:true};renderStep(key);}
+function showPlaceholder(key){
+  var el=document.getElementById(key+"Main")||document.getElementById("mainSection")||document.body;
+  el.innerHTML='<div style=\"text-align:center;padding:40px 16px;color:var(--muted)\"><h3>This service is coming soon</h3><p>The web request form for this trade is being set up. Please call us directly.</p></div>';
+}
+function startFlow(key){if(!flows[key]){showPlaceholder(key);return;}state[key]={answers:{},step:0,started:true};renderStep(key);}
 function renderStep(key){
   var f=flows[key],s=state[key],step=f.steps[s.step],total=f.steps.length;
   var dh='';for(var i=0;i<total;i++){var c=i===s.step?'active':i<s.step?'done':'';dh+='<span class="'+c+'"></span>';}
