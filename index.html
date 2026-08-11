@@ -354,7 +354,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 </div>
 
 <script>
-/* Error reporter: catch any load/runtime error and display it on-screen instead of a blank page */
+/* Error reporter: catch any load/runtime error and display it on-screen instead of a blank page.
+   This is in its OWN script block so it survives even a parse error in the main app script. */
 (function(){
   try{
     function showErr(msg){
@@ -362,9 +363,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
     }
     window.addEventListener('error',function(ev){showErr((ev.message||'')+'\n@'+(ev.filename||'')+':'+(ev.lineno||''));});
     window.addEventListener('unhandledrejection',function(ev){showErr('Promise: '+(ev.reason&&ev.reason.message||ev.reason));});
-    if(document.readyState==='complete'){/* ok */}
   }catch(e){}
 })();
+if(window.__spLoaded){} /* noop */
+</script>
+<script>
 /* ==============================
    SETTINGS & SETUP
    ============================== */
@@ -880,6 +883,6 @@ function revealIfBlank(){
 }
 </script>
 </body>
-<!-- ServicePro v7.6 -->
+<!-- ServicePro v7.7 -->
 <!-- v5.3b -->
 </html>
