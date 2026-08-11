@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,user-scalable=yes">
+<title>Tech Dashboard — ServicePro</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--bg2:#161b22;--surface:#21262d;--surface2:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--accent2:#f0883e;--green:#3fb950;--orange:#d29922;--red:#f85149;--border:#30363d;--radius:12px;--font:'Inter','Segoe UI',system-ui,sans-serif}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+.top{background:var(--bg2);padding:11px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.top .brand{font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.top .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex-shrink:0}
+.top .spacer{flex:1}
+.top a{color:var(--accent);font-size:12px;text-decoration:none;padding:4px 9px;background:var(--surface);border-radius:5px;border:1px solid var(--border);white-space:nowrap}
+.wrap{max-width:700px;margin:0 auto;padding:16px}
+.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto}
+.tabs button{flex:1;padding:10px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.tabs button.active{background:var(--surface2);color:var(--text);border-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.stat .n{font-size:20px;font-weight:700}
+.stat .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.stat.new .n{color:var(--accent)}
+.stat.called .n{color:var(--orange)}
+.stat.sched .n{color:var(--accent2)}
+.stat.done .n{color:var(--green)}
+.empty{background:var(--bg2);border:1px dashed var(--border);border-radius:var(--radius);padding:36px 16px;text-align:center;color:var(--muted);font-size:14px;line-height:1.6}
+.job{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.job .row1{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.job .name{font-weight:700;font-size:15px}
+.job .trade{font-size:10px;padding:2px 7px;border-radius:10px;background:var(--surface2);color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.job .when{font-size:11px;color:var(--muted);margin-left:auto}
+.job .issue{margin-top:7px;font-size:13px;color:var(--text);line-height:1.4}
+.job .meta{margin-top:7px;font-size:12px;color:var(--muted);line-height:1.5}
+.job .meta b{color:var(--text);font-weight:600}
+.badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.4px}
+.badge.new{background:rgba(88,166,255,.15);color:var(--accent)}
+.badge.called{background:rgba(210,153,34,.15);color:var(--orange)}
+.badge.sched{background:rgba(240,136,62,.15);color:var(--accent2)}
+.badge.done{background:rgba(63,185,80,.15);color:var(--green)}
+.job .actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.job .actions button{flex:1;min-width:80px;padding:8px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:12px;font-weight:600;cursor:pointer}
+.job .actions button.call{background:var(--green);color:var(--bg);border-color:var(--green)}
+.job .actions button.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.job .actions button.danger{background:var(--surface);color:var(--red);border-color:var(--red)}
+.addbar{display:flex;gap:8px;margin-bottom:14px}
+.addbar input{flex:1;padding:11px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg2);color:var(--text);font-size:14px}
+.addbar button{padding:11px 16px;border:none;border-radius:8px;background:var(--accent);color:var(--bg);font-size:14px;font-weight:700;cursor:pointer}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:200;padding:16px}
+.modal-bg.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);width:100%;max-width:480px;padding:18px;max-height:90vh;overflow-y:auto}
+.modal h3{margin-bottom:12px;font-size:16px}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:7px;background:var(--surface);color:var(--text);font-size:14px;font-family:inherit}
+.field textarea{resize:vertical;min-height:60px}
+.modal .btnrow{display:flex;gap:8px;margin-top:14px}
+.modal .btnrow button{flex:1;padding:11px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-weight:600;cursor:pointer}
+.modal .btnrow button.save{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.svc{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px}
+.svc .nm{font-weight:600;font-size:14px}
+.svc .px{font-size:13px;color:var(--green);margin-left:8px}
+.hint{font-size:11px;color:var(--muted);line-height:1.5;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+@media(max-width:420px){.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="brand"><span class="dot"></span> Tech Dashboard</div>
+  <div class="spacer"></div>
+  <a href="#" onclick="switchView('jobs');return false;">Jobs</a>
+  <a href="#" onclick="switchView('services');return false;">Services</a>
+  <a href="#" onclick="openSettings();return false;">⚙️</a>
+</div>
+<div class="wrap">
+  <div id="viewJobs">
+    <div class="stats">
+      <div class="stat new"><div class="n" id="cNew">0</div><div class="l">New</div></div>
+      <div class="stat called"><div class="n" id="cCalled">0</div><div class="l">Called</div></div>
+      <div class="stat sched"><div class="n" id="cSched">0</div><div class="l">Sched</div></div>
+      <div class="stat done"><div class="n" id="cDone">0</div><div class="l">Done</div></div>
+    </div>
+    <div class="addbar">
+      <input id="quickPhone" placeholder="Log a request — enter phone # or name…" onkeydown="if(event.key==='Enter')openAdd();">
+      <button onclick="openAdd()">＋ Add</button>
+    </div>
+    <div id="jobList"></div>
+    <div class="hint">
+      Requests arrive by SMS / email to your business phone. Log each incoming request here to track it, then tap <b>Call</b> to reach the customer — the callback is how you close the job. Everything is saved on this device.
+    </div>
+  </div>
+  <div id="viewServices" style="display:none">
+    <div id="svcList"></div>
+    <div class="hint">Your service list and pricing reference. Tap ⚙️ to edit your business name and phone.</div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h3 id="mTitle">New Request</h3>
+    <div class="field"><label>Customer name</label><input id="fName" placeholder="John Smith"></div>
+    <div class="field"><label>Phone number</label><input id="fPhone" placeholder="(555) 123-4567"></div>
+    <div class="field"><label>Trade / Service</label>
+      <select id="fTrade">
+        <option value="Locksmith">Locksmith</option>
+        <option value="Plumbing">Plumbing</option>
+        <option value="HVAC">HVAC</option>
+        <option value="Towing">Towing</option>
+        <option value="Electrical">Electrical</option>
+        <option value="Pest Control">Pest Control</option>
+        <option value="Garage Door">Garage Door</option>
+        <option value="Tree Service">Tree Service</option>
+        <option value="Pool Service">Pool Service</option>
+      </select>
+    </div>
+    <div class="field"><label>Issue / notes</label><textarea id="fIssue" placeholder="What did they need?"></textarea></div>
+    <div class="field"><label>Status</label>
+      <select id="fStatus">
+        <option value="new">New</option>
+        <option value="called">Called</option>
+        <option value="sched">Scheduled</option>
+        <option value="done">Done</option>
+      </select>
+    </div>
+    <div class="btnrow">
+      <button onclick="closeModal()">Cancel</button>
+      <button class="save" onclick="saveJob()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="settingsModal">
+  <div class="modal">
+    <h3>Tech Settings</h3>
+    <div class="field"><label>Business name</label><input id="sBiz"></div>
+    <div class="field"><label>Business phone</label><input id="sPhone"></div>
+    <div class="field"><label>Service area</label><input id="sArea" placeholder="e.g. 30 mi radius"></div>
+    <div class="btnrow">
+      <button onclick="document.getElementById('settingsModal').classList.remove('show')">Cancel</button>
+      <button class="save" onclick="saveSettings()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var DASH_KEY='sp_dash_jobs_v1';
+var SET_KEY='sp_dash_settings_v1';
+var jobs=[];
+var settings={biz:'',phone:'',area:''};
+var editingId=null;
+
+function loadAll(){
+  try{jobs=JSON.parse(localStorage.getItem(DASH_KEY))||[];}catch(e){jobs=[];}
+  try{settings=JSON.parse(localStorage.getItem(SET_KEY))||{};}catch(e){settings={};}
+  settings={biz:settings.biz||'',phone:settings.phone||'',area:settings.area||''};
+}
+function saveJobs(){try{localStorage.setItem(DASH_KEY,JSON.stringify(jobs));}catch(e){}}
+function saveSettings(){
+  settings.biz=document.getElementById('sBiz').value;
+  settings.phone=document.getElementById('sPhone').value;
+  settings.area=document.getElementById('sArea').value;
+  try{localStorage.setItem(SET_KEY,JSON.stringify(settings));}catch(e){}
+  document.getElementById('settingsModal').classList.remove('show');
+  render();
+}
+function switchView(v){
+  document.getElementById('viewJobs').style.display=v==='jobs'?'':'none';
+  document.getElementById('viewServices').style.display=v==='services'?'':'none';
+  var btn=document.querySelectorAll('.top a');btn.forEach(function(a){a.style.color=a.textContent.trim()===(v==='jobs'?'Jobs':v==='services'?'Services':'⚙️')?'#58a6ff':'';});
+}
+function stLabel(s){return s==='new'?'New':s==='called'?'Called':s==='sched'?'Scheduled':'Done';}
+function renderStats(){
+  document.getElementById('cNew').textContent=jobs.filter(function(j){return j.status==='new';}).length;
+  document.getElementById('cCalled').textContent=jobs.filter(function(j){return j.status==='called';}).length;
+  document.getElementById('cSched').textContent=jobs.filter(function(j){return j.status==='sched';}).length;
+  document.getElementById('cDone').textContent=jobs.filter(function(j){return j.status==='done';}).length;
+}
+function renderJobs(){
+  var el=document.getElementById('jobList');
+  if(!jobs.length){el.innerHTML='<div class="empty">No requests yet.<br>When an SMS/email request comes in, tap <b>＋ Add</b> to log it.</div>';return;}
+  var html='';
+  // sort: new first, then called, sched, done; newest first within group
+  var order={new:0,called:1,sched:2,done:3};
+  var sorted=jobs.slice().sort(function(a,b){return order[a.status]-order[b.status]||(b.ts-a.ts);});
+  sorted.forEach(function(j){
+    var t=new Date(j.ts).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+    html+='<div class="job">'
+      +'<div class="row1"><span class="name">'+(j.name||'—')+'</span><span class="trade">'+(j.trade||'')+'</span><span class="when">'+t+'</span></div>'
+      +'<div class="row1" style="margin-top:6px"><span class="badge '+j.status+'">'+stLabel(j.status)+'</span>'
+      +'<span class="meta" style="margin-left:auto;font-size:12px"><b>'+escapeHtml(j.phone||'')+'</b></span></div>'
+      +(j.issue?'<div class="issue">'+escapeHtml(j.issue)+'</div>':'')
+      +'<div class="actions">'
+      +(j.phone?'<button class="call" onclick="callJob('+j.id+')">📞 Call</button>':'')
+      +'<button class="primary" onclick="editJob('+j.id+')">Edit</button>'
+      +'<button onclick="advance('+j.id+')">Next →</button>'
+      +'<button class="danger" onclick="delJob('+j.id+')">✕</button>'
+      +'</div></div>';
+  });
+  el.innerHTML=html;
+}
+function renderServices(){
+  var svcs=[
+    ['Locksmith','Residential','From $79'],
+    ['Locksmith','Commercial','From $99'],
+    ['Locksmith','Automotive','From $89'],
+    ['Locksmith','Safe Service','From $129'],
+    ['Plumbing','Service call','From $89'],
+    ['HVAC','Service / repair','From $99'],
+    ['Towing','Local tow','From $79'],
+    ['Electrical','Service call','From $95'],
+    ['Pest Control','Treatment','From $99'],
+    ['Garage Door','Repair','From $99'],
+    ['Tree Service','Trim / removal','From $129'],
+    ['Pool Service','Weekly care','From $75/mo']
+  ];
+  var html='';
+  svcs.forEach(function(s){html+='<div class="svc"><span class="nm">'+s[0]+' — '+s[1]+'</span><span class="px">'+s[2]+'</span></div>';});
+  document.getElementById('svcList').innerHTML=html;
+}
+function render(){
+  renderStats();renderJobs();renderServices();
+  document.getElementById('sBiz').value=settings.biz;
+  document.getElementById('sPhone').value=settings.phone;
+  document.getElementById('sArea').value=settings.area;
+}
+function escapeHtml(s){return (s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function openAdd(){editingId=null;document.getElementById('mTitle').textContent='New Request';document.getElementById('fName').value=document.getElementById('quickPhone').value;document.getElementById('fPhone').value=document.getElementById('quickPhone').value;document.getElementById('fIssue').value='';document.getElementById('fStatus').value='new';document.getElementById('modal').classList.add('show');}
+function editJob(id){var j=jobs.find(function(x){return x.id===id;});if(!j)return;editingId=id;document.getElementById('mTitle').textContent='Edit Request';document.getElementById('fName').value=j.name||'';document.getElementById('fPhone').value=j.phone||'';document.getElementById('fTrade').value=j.trade||'Locksmith';document.getElementById('fIssue').value=j.issue||'';document.getElementById('fStatus').value=j.status||'new';document.getElementById('modal').classList.add('show');}
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+function saveJob(){
+  var name=document.getElementById('fName').value.trim();
+  var phone=document.getElementById('fPhone').value.trim();
+  var trade=document.getElementById('fTrade').value;
+  var issue=document.getElementById('fIssue').value.trim();
+  var status=document.getElementById('fStatus').value;
+  if(!name&&!phone){alert('Enter a name or phone number.');return;}
+  if(editingId){
+    var j=jobs.find(function(x){return x.id===editingId;});
+    if(j){j.name=name;j.phone=phone;j.trade=trade;j.issue=issue;j.status=status;}
+  }else{
+    jobs.push({id:Date.now(),name:name,phone:phone,trade:trade,issue:issue,status:status,ts:Date.now()});
+  }
+  saveJobs();closeModal();document.getElementById('quickPhone').value='';render();
+}
+function advance(id){
+  var j=jobs.find(function(x){return x.id===id;});if(!j)return;
+  j.status=j.status==='new'?'called':j.status==='called'?'sched':j.status==='sched'?'done':'done';
+  saveJobs();render();
+}
+function callJob(id){var j=jobs.find(function(x){return x.id===id;});if(j&&j.phone){window.location.href='tel:'+j.phone.replace(/[^\d+]/g,'');}}
+function delJob(id){if(!confirm('Delete this job?'))return;jobs=jobs.filter(function(j){return j.id!==id;});saveJobs();render();}
+function openSettings(){
+  document.getElementById('sBiz').value=settings.biz;
+  document.getElementById('sPhone').value=settings.phone;
+  document.getElementById('sArea').value=settings.area;
+  document.getElementById('settingsModal').classList.add('show');
+}
+loadAll();render();
+</script>
+</body>
+</html>
