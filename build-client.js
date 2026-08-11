@@ -127,9 +127,13 @@ function minifyJS(js){
 function buildClient(clientName, trades, noPush, domain){
   // ---- 1. load master ----
   const html0 = fs.readFileSync(MASTER, 'utf8');
-  const jsStart = html0.indexOf('<script>') + 8;
-  const jsEnd = html0.lastIndexOf('</script>');
-  let js = html0.slice(jsStart, jsEnd);
+  // Extract ONLY the last <script> block = the main app script (version-badge and
+  // error-reporter are their own earlier blocks and must NOT be merged/minified).
+  const scriptTags = [...html0.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+  const appBlock = scriptTags[scriptTags.length - 1];
+  const jsStart = appBlock.index + '<script>'.length;
+  const jsEnd = jsStart + appBlock[1].length;
+  let js = appBlock[1];
 
   // ---- 2. filter trades object ----
   const tb = extractEntries(js, 'trades');
@@ -197,8 +201,10 @@ function buildClient(clientName, trades, noPush, domain){
     '$1 active$2');
 
   // ---- 8. assemble ----
-  const jsStart2 = html.indexOf('<script>') + 8;
-  const jsEnd2 = html.lastIndexOf('</script>');
+  const tags2 = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+  const app2 = tags2[tags2.length - 1];
+  const jsStart2 = app2.index + '<script>'.length;
+  const jsEnd2 = jsStart2 + app2[1].length;
   const jsMin = minifyJS(js);
   const out = html.slice(0, jsStart2) + jsMin + html.slice(jsEnd2);
   const outFile = path.join(__dirname, slugify(clientName) + '.html');
