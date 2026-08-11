@@ -124,7 +124,7 @@ function minifyJS(js){
 }
 
 // ---------- Build one client ----------
-function buildClient(clientName, trades, noPush){
+function buildClient(clientName, trades, noPush, domain){
   // ---- 1. load master ----
   const html0 = fs.readFileSync(MASTER, 'utf8');
   const jsStart = html0.indexOf('<script>') + 8;
@@ -214,13 +214,13 @@ function buildClient(clientName, trades, noPush){
   }
 
   // ---- 9. deploy ----
-  deployRepo(clientName, out, domainOf(clientName), js);
+  deployRepo(clientName, outFile, domain, js);
 }
 
 function slugify(name){
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
-function domainOf(){ return ''; }  // placeholder; domain passed separately
+
 
 function api(method, url, body){
   const tok = readToken();
@@ -293,7 +293,7 @@ function main(){
   if (!fs.existsSync(MASTER)){ console.error('ERROR: master index.html not found at ' + MASTER); process.exit(1); }
   if (!tok){ console.error('ERROR: no GitHub token in ~/.git-credentials'); process.exit(1); }
 
-  buildClient(clientName, trades, noPush);
+  buildClient(clientName, trades, noPush, domain);
 }
 
 main();
