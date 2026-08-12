@@ -363,7 +363,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
       b.id='spVerBadge';
       b.style.cssText='position:fixed;bottom:6px;right:8px;z-index:2147483647;background:rgba(13,17,23,.82);color:#8b949e;border:1px solid #30363d;border-radius:6px;padding:3px 7px;font-size:10px;font-family:monospace;letter-spacing:.3px;pointer-events:none';
       var d=new Date();
-      b.textContent='SP v7.9 live';
+      b.textContent='SP v7.10 live';
       document.body.appendChild(b);
     }
   }catch(e){}
@@ -905,17 +905,37 @@ function revealIfBlank(){
 }
 
 /* ---- Explicit global exposure: guarantee inline onclick/onkeydown handlers always
-   find these functions, regardless of scope/minification/partial-script issues. ---- */
-(function(){ 
-  var fns=['answerInput','answer','back','selectTrade','switchTab','startFlow','renderStep',
-           'showResult','finishUpload','handleFiles','openPinModal','closePinModal','submitPin',
-           'setupNext','finishSetup','skipSetup','registerTrade','resetFlow'];
-  for(var i=0;i<fns.length;i++){
-    try{ var n=fns[i]; if(typeof window[n]!=='function' && typeof eval(n)==='function'){ window[n]=eval(n); } }catch(e){}
-  }
+   find these functions, regardless of scope/minification/partial-script/CSP issues.
+   Direct assignments (no eval) so they work even under strict Content-Security-Policy. ---- */
+(function(){
+  function bind(name, fn){ try{ if(typeof fn==='function') window[name]=fn; }catch(e){} }
+  bind('answerInput', answerInput);
+  bind('answer', answer);
+  bind('back', back);
+  bind('selectTrade', selectTrade);
+  bind('switchTab', switchTab);
+  bind('startFlow', startFlow);
+  bind('renderStep', renderStep);
+  bind('showResult', showResult);
+  bind('finishUpload', finishUpload);
+  bind('handleFiles', handleFiles);
+  bind('openPinModal', openPinModal);
+  bind('closePinModal', closePinModal);
+  bind('checkPin', checkPin);
+  bind('setupNext', setupNext);
+  bind('finishSetup', finishSetup);
+  bind('skipSetup', skipSetup);
+  bind('saveSettings', saveSettings);
+  bind('loadSettings', loadSettings);
+  bind('applySettings', applySettings);
+  bind('revealIfBlank', revealIfBlank);
+  bind('copyMsg', copyMsg);
+  bind('confirmSend', confirmSend);
+  bind('closeSettings', closeSettings);
+  bind('showPlaceholder', showPlaceholder);
 })();
 </script>
 </body>
-<!-- ServicePro v7.9 -->
+<!-- ServicePro v7.10 -->
 <!-- v5.3b -->
 </html>
