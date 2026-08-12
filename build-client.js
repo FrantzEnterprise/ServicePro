@@ -179,17 +179,14 @@ function buildClient(clientName, trades, noPush, domain){
   js = js.replace("if(t&&t.subs){t.subs.forEach",
                   "if(t&&t.subs&&t.subs.length){t.subs.forEach");
   // graceful "coming soon" for trades with no flow content
+  // NOTE: master already defines showPlaceholder() with a fallback to the
+  // trade's first valid flow (v7.8+). Do NOT inject a second placeholder here —
+  // the injected OLD no-fallback version would override the good one and cause
+  // 'This service is coming soon' on client builds. (v7.11 fix)
   js = js.replace(
     'function startFlow(key){state[key]={answers:{},step:0,started:true};renderStep(key);}',
     'function startFlow(key){if(!flows[key]){showPlaceholder(key);return;}state[key]={answers:{},step:0,started:true};renderStep(key);}'
   );
-  const ph = [
-    'function showPlaceholder(key){',
-    '  var el=document.getElementById(key+"Main")||document.getElementById("mainSection")||document.body;',
-    "  el.innerHTML='<div style=\"text-align:center;padding:40px 16px;color:var(--muted)\"><h3>This service is coming soon</h3><p>The web request form for this trade is being set up. Please call us directly.</p></div>';",
-    '}\n'
-  ].join('\n');
-  js = js.replace('function startFlow(', ph + 'function startFlow(');
 
   // ---- 7. filter HTML trade buttons ----
   let html = html0;
