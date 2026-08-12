@@ -903,8 +903,19 @@ function revealIfBlank(){
     try{selectTrade(act?act.getAttribute('data-trade'):'locksmith');}catch(e2){}
   }catch(e){}
 }
+
+/* ---- Explicit global exposure: guarantee inline onclick/onkeydown handlers always
+   find these functions, regardless of scope/minification/partial-script issues. ---- */
+(function(){ 
+  var fns=['answerInput','answer','back','selectTrade','switchTab','startFlow','renderStep',
+           'showResult','finishUpload','handleFiles','openPinModal','closePinModal','submitPin',
+           'setupNext','finishSetup','skipSetup','registerTrade','resetFlow'];
+  for(var i=0;i<fns.length;i++){
+    try{ var n=fns[i]; if(typeof window[n]!=='function' && typeof eval(n)==='function'){ window[n]=eval(n); } }catch(e){}
+  }
+})();
 </script>
 </body>
-<!-- ServicePro v7.8 -->
+<!-- ServicePro v7.9 -->
 <!-- v5.3b -->
 </html>
