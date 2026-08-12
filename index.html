@@ -363,7 +363,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
       b.id='spVerBadge';
       b.style.cssText='position:fixed;bottom:6px;right:8px;z-index:2147483647;background:rgba(13,17,23,.82);color:#8b949e;border:1px solid #30363d;border-radius:6px;padding:3px 7px;font-size:10px;font-family:monospace;letter-spacing:.3px;pointer-events:none';
       var d=new Date();
-      b.textContent='SP v7.10 live';
+      b.textContent='SP v7.11 live';
       document.body.appendChild(b);
     }
   }catch(e){}
@@ -813,7 +813,7 @@ function renderStep(key){
     ie.innerHTML='<div style="margin:4px 0"><label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Add photos (optional) - tap to attach up to 3 images</label><input type="file" id="'+key+'FileInput" accept="image/*" multiple style="display:none" onchange="handleFiles(\''+key+'\',this)"><button class="flow-btn" style="width:100%;margin-bottom:6px" onclick="document.getElementById(\''+key+'FileInput\').click()">\ud83d\udcf7 Attach Photos ('+stored.photos.length+'/3)</button><div id="'+key+'Thumbs" style="display:flex;flex-wrap:wrap;gap:6px">'+stored.photos.map(function(p){return '<img src="'+p.data+'" style="width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid var(--border)">';}).join('')+'</div></div><div style="margin:8px 0"><label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Or paste a video link (optional)</label><input type="text" id="'+key+'VideoLink" placeholder="https://youtube.com/watch?v=... or iCloud link" value="'+stored.video+'" style="width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:8px;font-size:13px"></div><p style="color:var(--muted);font-size:11px;margin-bottom:4px">Photos &amp; video optional - you can skip and just send the request.</p>';
   }
 
-  if(step.opts){ne.innerHTML='';}else{var bb=s.step>0?'<button onclick="back(\''+key+'\')">← Back</button>':'';var navBtn=step.upload?'finishUpload(\''+key+'\')':'answerInput(\''+key+'\')';ne.innerHTML=bb+'<button class="primary" onclick="'+navBtn+'(\''+key+'\')">Continue →</button>';}
+  if(step.opts){ne.innerHTML='';}else{var bb=s.step>0?'<button onclick="back(\''+key+'\')">← Back</button>':'';var navBtn=step.upload?'finishUpload':'answerInput';ne.innerHTML=bb+'<button class="primary" onclick="'+navBtn+'(\''+key+'\')">Continue →</button>';}
   var rEl=document.getElementById(key+'Result')||document.getElementById('mainResult');if(rEl)rEl.classList.remove('show');
 }
 
@@ -936,6 +936,6 @@ function revealIfBlank(){
 })();
 </script>
 </body>
-<!-- ServicePro v7.10 -->
+<!-- ServicePro v7.11 -->
 <!-- v5.3b -->
 </html>
