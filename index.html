@@ -363,7 +363,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
       b.id='spVerBadge';
       b.style.cssText='position:fixed;bottom:6px;right:8px;z-index:2147483647;background:rgba(13,17,23,.82);color:#8b949e;border:1px solid #30363d;border-radius:6px;padding:3px 7px;font-size:10px;font-family:monospace;letter-spacing:.3px;pointer-events:none';
       var d=new Date();
-      b.textContent='SP v7.12 live';
+      b.textContent='SP v7.13 live';
       document.body.appendChild(b);
     }
   }catch(e){}
@@ -861,46 +861,43 @@ function showResult(key){
   var est='<div style="background:var(--surface);border-radius:8px;padding:14px;margin:12px 0;text-align:left"><h3 style="color:var(--accent);margin-bottom:8px">\ud83d\udccb Service Estimate</h3><div style="font-size:13px;line-height:1.8">'+msg.replace(/\n/g,'<br>')+'</div>'+(photos.length?'<div style="font-size:13px;color:var(--muted);margin-top:10px">\ud83d\udcf7 '+photos.length+' photo'+(photos.length>1?'s':'')+' attached</div>'+(photos.length===1?'<img src="'+photos[0].data+'" style="max-width:120px;max-height:90px;border-radius:6px;margin-top:6px;border:1px solid var(--border)">':''):'');
   if(total>0){est+='<hr style="border:none;border-top:1px solid var(--border);margin:12px 0"><table style="width:100%;font-size:13px"><tr><td>Trip fee:</td><td style="text-align:right;font-weight:600">$'+tripFee.toFixed(2)+'</td></tr><tr style="border-top:1px solid var(--border)"><td style="padding-top:6px;font-weight:700">Est. Total:</td><td style="text-align:right;padding-top:6px;font-weight:700;color:var(--accent)">$'+total.toFixed(2)+'</td></tr></table><p style="color:var(--muted);font-size:11px;margin-top:8px">* Final price may vary. Technician confirms on call.</p>';}
   est+='</div><div style="margin:12px 0;display:flex;flex-direction:column;gap:8px">';
-  if(photos.length){est+='<button onclick="sendWithPhotos(\''+key+'\')" style="width:100%;background:var(--green);color:var(--bg);border:none;padding:14px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer">\ud83d\udcf7 Send Request + '+photos.length+' Photo'+(photos.length>1?'s':'')+'</button>';}
-  if(fullPhone){est+='<button onclick="confirmSend(\''+key+'\',\''+fullPhone+'\',\'\')" style="width:100%;background:var(--accent);color:var(--bg);border:none;padding:14px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer">\ud83d\udcf1 Send as Text</button>';}
-  if(email){est+='<button onclick="confirmSend(\''+key+'\',\'\',\''+email+'\')" style="width:100%;background:var(--bg2);color:var(--text);border:1px solid var(--border);padding:14px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer">\ud83d\udce7 Send as Email</button>';}
+  est+='<button onclick="sendNow(\''+key+'\')" style="width:100%;background:var(--green);color:var(--bg);border:none;padding:14px;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer">\ud83d\udce4 Send Request</button>';
   est+='</div><button class="reset-btn" onclick="startFlow(\''+key+'\')">Start Over</button>';
   el.innerHTML=est;el.classList.add('show');
   var oE=document.getElementById(key+'Opts')||document.getElementById('mainOpts');if(oE)oE.style.display='none';
   var iE=document.getElementById(key+'Input')||document.getElementById('mainInput');if(iE)iE.style.display='none';
   var nE=document.getElementById(key+'Nav')||document.getElementById('mainNav');if(nE)nE.innerHTML='';
 }
-function sendWithPhotos(key){
-  // Send the request with the ACTUAL image files via the phone's native share
-  // sheet (Web Share API). Base64 data URLs can't be attached to SMS/mailto, so
-  // we convert them back to File objects and share them to Messages/WhatsApp/Email.
+function sendNow(key){
+  // ONE button sends everything: text + photos (as real image files) via the
+  // phone's native share sheet so they actually arrive as images.
   var f=flows[key],s=state[key],msg=f.build(s.answers),subj="ServicePro: "+key.toUpperCase()+" Service Request";
   var media=s.answers.media||{},photos=media.photos||[];
   if(media.video){msg+='\n\nVIDEO LINK: '+media.video+'\n';}
-  if(!photos.length){ confirmSend(key, settings.phone||'' , settings.email||''); return; }
-  var files=photos.map(function(p,i){
-    try{
-      var m=p.data.match(/^data:([^;]+);base64,(.*)$/);
-      var mime=m?m[1]:'image/jpeg';
-      var bin=atob(m?m[2]:'');
-      var arr=new Uint8Array(bin.length);
-      for(var j=0;j<bin.length;j++){arr[j]=bin.charCodeAt(j);}
-      return new File([arr],'photo_'+(i+1)+'.jpg',{type:mime});
-    }catch(e){return null;}
-  }).filter(Boolean);
-  var showDone=function(){var cb=document.getElementById(key+'Result')||document.getElementById('mainResult');if(cb){cb.innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:48px;margin-bottom:10px">\u{1f4de}</div><h3 style="color:var(--green);margin-bottom:8px">Request Sent!</h3><p style="color:var(--muted);font-size:14px;line-height:1.5">Your request and photos were sent. The technician will call you back to confirm.</p><p style="color:var(--text);font-size:13px;margin-top:12px">Please keep your phone nearby.</p><button class="reset-btn" onclick="startFlow(\''+key+'\')" style="margin-top:16px">Submit Another Request</button></div>';}};
-  var shareData={text:msg};
-  if(files.length){shareData.files=files;}
-  if(navigator.share&&navigator.canShare&&navigator.canShare({files:files})){
-    navigator.share(shareData).then(function(){showDone();}).catch(function(){/* user cancelled - do nothing */});
-  }else{
-    // Fallback: no share-with-files support - just send text via preferred method
-    var phone=settings.phone||'';var country=settings.country||'1';var fullPhone='+'+country+phone.replace(/[^\d]/g,'');var email=settings.email||'';
-    var mm='📷 '+photos.length+' photo'+(photos.length>1?'s':'')+' attached to this request\n\n'+msg;
-    if(email){window.open('mailto:'+email+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(mm),'_blank');showDone();}
-    else if(fullPhone){window.location.href='sms:'+fullPhone+'?body='+encodeURIComponent(mm);showDone();}
-    else{alert('Photos are ready in this request. Share them with your technician.');}
+  var phone=settings.phone||'';var country=settings.country||'1';var fullPhone='+'+country+phone.replace(/[^\d]/g,'');var email=settings.email||'';
+  var showDone=function(){var cb=document.getElementById(key+'Result')||document.getElementById('mainResult');if(cb){cb.innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:48px;margin-bottom:10px">\u{1f4de}</div><h3 style="color:var(--green);margin-bottom:8px">Request Sent!</h3><p style="color:var(--muted);font-size:14px;line-height:1.5">Your request was sent. The technician will call you back to confirm.</p><p style="color:var(--text);font-size:13px;margin-top:12px">Please keep your phone nearby.</p><button class="reset-btn" onclick="startFlow(\''+key+'\')" style="margin-top:16px">Submit Another Request</button></div>';}};
+  var sendText=function(txt){
+    if(email){window.open('mailto:'+email+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(txt),'_blank');showDone();}
+    else if(fullPhone){window.location.href='sms:'+fullPhone+'?body='+encodeURIComponent(txt);showDone();}
+    else{alert('No email or phone is set in Settings. Please add one.');}
+  };
+  if(photos.length&&navigator.share&&navigator.canShare){
+    var files=photos.map(function(p,i){
+      try{
+        var m=p.data.match(/^data:([^;]+);base64,(.*)$/);
+        var mime=m?m[1]:'image/jpeg';
+        var bin=atob(m?m[2]:'');
+        var arr=new Uint8Array(bin.length);
+        for(var j=0;j<bin.length;j++){arr[j]=bin.charCodeAt(j);}
+        return new File([arr],'photo_'+(i+1)+'.jpg',{type:mime});
+      }catch(e){return null;}
+    }).filter(Boolean);
+    if(files.length&&navigator.canShare({files:files})){
+      navigator.share({text:msg,files:files}).then(function(){showDone();}).catch(function(){});
+      return;
+    }
   }
+  sendText(msg);
 }
 function confirmSend(key,fullPhone,email){
   var f=flows[key],s=state[key],msg=f.build(s.answers),subj="ServicePro: "+key.toUpperCase()+" Service Request";
@@ -964,12 +961,12 @@ function revealIfBlank(){
   bind('revealIfBlank', revealIfBlank);
   bind('copyMsg', copyMsg);
   bind('confirmSend', confirmSend);
-  bind('sendWithPhotos', sendWithPhotos);
+  bind('sendNow', sendNow);
   bind('closeSettings', closeSettings);
   bind('showPlaceholder', showPlaceholder);
 })();
 </script>
 </body>
-<!-- ServicePro v7.12 -->
+<!-- ServicePro v7.13 -->
 <!-- v5.3b -->
 </html>
